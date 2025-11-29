@@ -13,7 +13,7 @@ namespace Py {
 	using std::make_shared;
 	using std::runtime_error;
 	enum class Type {
-		Int, Float, Str, Bool, None, Undefined
+		Int, Float, Str, Bool, None, Undefined, Iterator, List
 	};
 	std::string TypeToString(Type type);
 	struct PyType {
@@ -53,9 +53,13 @@ namespace Py {
 		virtual pointer __or__(const pointer& other) const;
 		virtual pointer __not__(const pointer& other) const;
 
+		virtual pointer __iter__() const;
+
 	protected:
 		// 错误处理函数声明
 		pointer defaultOpError(const std::string& op, const pointer& other) const;
+
+		pointer defaultNoIterError() const;
 	private:
 		PyType type;
 	};
@@ -66,13 +70,17 @@ namespace Py {
 		{Type::Float, PyType(Type::Float)},
 		{Type::Str, PyType(Type::Str)},
 		{Type::Bool, PyType(Type::Bool)},
-		{Type::None, PyType(Type::None)}
+		{Type::None, PyType(Type::None)},
+		{Type::Iterator, PyType(Type::Iterator)},
+		{Type::List, PyType{Type::List}}
 	};
 	class PInt;
 	class PFloat;
 	class PBool;
 	class PStr;
 	class PNone;
+	class Iterator;
+	class PList;
 
 	class Environment {
 		using EPointer = std::shared_ptr<Environment>;

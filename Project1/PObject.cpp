@@ -125,6 +125,12 @@ namespace Py {
 		return pointer();
 	}
 
+	pointer PObject::__iter__() const
+	{
+		defaultNoIterError();
+		return pointer();
+	}
+
 	Environment::Environment(EPointer parent) : parent(parent)
 	{
 	}
@@ -167,6 +173,11 @@ namespace Py {
 	pointer PObject::defaultOpError(const std::string& op, const pointer& other) const
 	{
 		throw runtime_error("没有匹配的运算符");
+	}
+
+	pointer PObject::defaultNoIterError() const
+	{
+		throw runtime_error("__iter__未实现");
 	}
 
 	
