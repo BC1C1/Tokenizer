@@ -32,9 +32,9 @@ namespace Py {
 		}
 		return result + " ]";
 	}
-	pointer PList::__iter__() const
+	pointer PList::__iter__()
 	{
-		return make_shared<ListIterator>(make_shared<PList>(*this));
+		return make_shared<ListIterator>(shared_from_this());
 	}
 }
 

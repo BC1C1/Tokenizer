@@ -18,7 +18,7 @@ namespace Py {
 		virtual string toString() const override;
 
 	public:
-		virtual pointer __iter__() const override;
+		virtual pointer __iter__() override;
 
 	private:
 		vector<pointer> list;

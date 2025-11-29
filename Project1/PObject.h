@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 namespace Py {
+	using std::enable_shared_from_this;
 	using std::dynamic_pointer_cast;
 	using std::string;
 	using std::map;
@@ -21,7 +22,7 @@ namespace Py {
 		std::string __str__();
 		Type type;
 	};
-	class PObject
+	class PObject : public enable_shared_from_this<PObject>
 	{
 	public:
 		using pointer = std::shared_ptr<Py::PObject>;
@@ -53,7 +54,7 @@ namespace Py {
 		virtual pointer __or__(const pointer& other) const;
 		virtual pointer __not__(const pointer& other) const;
 
-		virtual pointer __iter__() const;
+		virtual pointer __iter__();
 
 	protected:
 		// 错误处理函数声明

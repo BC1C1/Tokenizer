@@ -125,7 +125,7 @@ namespace Py {
 		return pointer();
 	}
 
-	pointer PObject::__iter__() const
+	pointer PObject::__iter__()
 	{
 		defaultNoIterError();
 		return pointer();
