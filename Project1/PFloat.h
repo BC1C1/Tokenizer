@@ -1,0 +1,35 @@
+#pragma once
+#include "PObject.h"
+#include "TypeDefine.h"
+#include <cmath>
+namespace Py {
+	using std::string;
+	class PFloat : public PObject
+	{
+	public:
+		PFloat(double val);
+		virtual string toString() const override;
+		double getValue() const;
+		void setValue(double val);
+	public:
+		// 算术运算符声明
+		virtual pointer __add__(const pointer& other) const override;
+		virtual pointer __sub__(const pointer& other) const override;
+		virtual pointer __mul__(const pointer& other) const override;
+		virtual pointer __truediv__(const pointer& other) const override;
+		virtual pointer __pow__(const pointer& other) const override;
+
+		// 比较运算符声明
+		virtual pointer __eq__(const pointer& other) const override;
+		virtual pointer __ne__(const pointer& other) const override;
+		virtual pointer __lt__(const pointer& other) const override;
+		virtual pointer __le__(const pointer& other) const override;
+		virtual pointer __gt__(const pointer& other) const override;
+		virtual pointer __ge__(const pointer& other) const override;
+
+	private:
+		double value;
+	};
+}
+
+
