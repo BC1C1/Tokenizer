@@ -150,36 +150,48 @@ namespace AST {
 		// 最小元素
 		auto token = tokens[current];
 		auto type = token.type;
+		pointer ret = nullptr;
 		switch (type)
 		{
 		case Lexer::TokenType::STRING: {
 			current += 1;
-			return make_shared<String>(token.lexeme);
+			ret = make_shared<String>(token.lexeme);
+			break;
 		}
 		case Lexer::TokenType::NUMBER: {
 			current += 1;
 			double value = std::stod(token.lexeme);
-			return make_shared<Number>(value);
+			ret = make_shared<Number>(value);
+			break;
 		}
 		case Lexer::TokenType::TRUE: {
 			current += 1;
-			return make_shared<Bool>(true);
+			ret = make_shared<Bool>(true);
+			break;
 		}
 		case Lexer::TokenType::FALSE: {
 			current += 1;
-			return make_shared<Bool>(false);
+			ret = make_shared<Bool>(false);
+			break;
 		}
 		case Lexer::TokenType::IDENTIFIER: {
 			current += 1;
-			return make_shared<Variable>(token.lexeme);
+			ret = make_shared<Variable>(token.lexeme);
+			break;
 		}
 		case Lexer::TokenType::LPAREN: {
 			// 开始匹配
 			comsume(TokenType::LPAREN, "缺失的左括号");
 			auto inner = parseExpression();
 			comsume(TokenType::RPAREN, "缺失的右括号");
-			return inner;
+			ret = inner;
+			break;
 			// return之前就consume了右括号了，这个语句只匹配了一层括号
+		}
+		case Lexer::TokenType::LBRACKET: {
+			auto inner = parseList();
+			ret = inner;
+			break;
 		}
 		case Lexer::TokenType::COMMA: {
 			break;
@@ -188,20 +200,63 @@ namespace AST {
 			// 直接提交错误
 			throwErrorMsg("缺失的左括号");
 			current += 1;
+			break;
 		}
 		case Lexer::TokenType::EOF_TOKEN: {
 			throwErrorMsg("不完整的表达式");
 			current += 1;
+			break;
 		}
 		case Lexer::TokenType::ERROR: {
 			throwErrorMsg("错误的Token");
 			current += 1;
+			break;
 		}
 		default:
 			throwErrorMsg("未知的符号");
 			current += 1;
+			break;
 		}
-		return nullptr;
+		while (match(TokenType::LBRACKET)) {
+			auto indexExpr = parseExpression();
+			comsume(TokenType::RBRACKET, "索引缺少右分隔符 ']'");
+			ret = make_shared<AST::Index>(ret, indexExpr);
+		}
+
+		return ret;
+	}
+
+	pointer Parser::parseList()
+	{
+		// 参照这个 
+		/*		
+		// 确认是不是print语句
+		if (!match(TokenType::PRINT)) return nullptr;
+		comsume(TokenType::LPAREN, "缺失的左括号");
+		vector<pointer> text;
+		do {
+			if (match(TokenType::RPAREN))
+				throwErrorMsg("print缺少参数");
+			text.push_back(parseExpression());
+		} while (match(TokenType::COMMA));
+		comsume(TokenType::RPAREN, "缺失的右括号");
+		return make_shared<Print>(text);
+		*/
+		comsume(TokenType::LBRACKET, "缺失的左中括号");
+		vector<pointer> expressions;
+		while (!check(TokenType::RBRACKET)) {
+			auto ele = parseExpression();
+			if (ele)
+				expressions.push_back(ele);
+			if (match(TokenType::COMMA)) {
+				continue;
+			}
+			else if (!check(TokenType::RBRACKET)) {
+				throwErrorMsg("元素之间缺少逗号");
+			}
+		}
+		comsume(TokenType::RBRACKET, "缺失的右中括号");
+		return make_shared<List>(std::move(expressions));
 	}
 
 	void Parser::throwErrorMsg(string text)

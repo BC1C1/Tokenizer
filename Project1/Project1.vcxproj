@@ -133,7 +133,9 @@
     <ClInclude Include="Bool.h" />
     <ClInclude Include="Executor.h" />
     <ClInclude Include="If.h" />
+    <ClInclude Include="Index.h" />
     <ClInclude Include="Iterator.h" />
+    <ClInclude Include="List.h" />
     <ClInclude Include="ListIterator.h" />
     <ClInclude Include="NodeDefine.h" />
     <ClInclude Include="Number.h" />
@@ -160,7 +162,9 @@
     <ClCompile Include="Bool.cpp" />
     <ClCompile Include="Executor.cpp" />
     <ClCompile Include="If.cpp" />
+    <ClCompile Include="Index.cpp" />
     <ClCompile Include="Iterator.cpp" />
+    <ClCompile Include="List.cpp" />
     <ClCompile Include="ListIterator.cpp" />
     <ClCompile Include="NodeDefine.cpp" />
     <ClCompile Include="Number.cpp" />

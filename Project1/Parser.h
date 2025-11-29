@@ -46,6 +46,8 @@ namespace AST {
 		pointer parseUnary();
 
 		pointer parsePrimary();
+
+		pointer parseList();
 	private:
 		void throwErrorMsg(string text);
 	private:

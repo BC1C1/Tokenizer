@@ -225,12 +225,12 @@ std::vector<Lexer::Token> Lexer::Tokenizer::scanPartToken(const std::string& lin
             tokens.emplace_back(TokenType::RPAREN, ")", lineNum);
             current++;
         }
-        else if (c == '{') {  // {
-            tokens.emplace_back(TokenType::LBRACE, "{", lineNum);
+        else if (c == '[') {  // {
+            tokens.emplace_back(TokenType::LBRACKET, "[", lineNum);
             current++;
             }
-        else if (c == '}') {  // }
-            tokens.emplace_back(TokenType::RBRACE, "}", lineNum);
+        else if (c == ']') {  // }
+            tokens.emplace_back(TokenType::RBRACKET, "]", lineNum);
             current++;
         }
         else if (c == '#') { // 注释

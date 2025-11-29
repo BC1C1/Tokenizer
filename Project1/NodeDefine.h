@@ -17,6 +17,8 @@ namespace AST {
 		Variable,
 		Number,
 		String,
+		List,
+		Index,
 		Bool,
 		Print 
 	};

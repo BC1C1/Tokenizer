@@ -19,7 +19,7 @@ namespace Lexer
         // 赋值
         ASSIGN,
         // 括号
-        LPAREN, RPAREN, LBRACE, RBRACE,
+        LPAREN, RPAREN, LBRACKET, RBRACKET,
         // 冒号
         COLON,
         // 缩进
@@ -74,8 +74,8 @@ namespace Lexer
             case TokenType::ASSIGN: os << "ASSIGN"; break;
             case TokenType::LPAREN: os << "LPAREN"; break;
             case TokenType::RPAREN: os << "RPAREN"; break;
-            case TokenType::LBRACE: os << "LBRACE"; break;
-            case TokenType::RBRACE: os << "RBRACE"; break;
+            case TokenType::LBRACKET: os << "LBRACKET"; break;
+            case TokenType::RBRACKET: os << "RBRACKET"; break;
             case TokenType::EOF_TOKEN: os << "EOF"; break;
             case TokenType::ERROR: os << "ERROR"; break;
             }

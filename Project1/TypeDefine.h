@@ -26,3 +26,6 @@
 
 #include "Iterator.h"
 #include "PList.h"
+
+#include "List.h"
+#include "Index.h"
