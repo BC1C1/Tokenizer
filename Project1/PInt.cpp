@@ -30,8 +30,8 @@ namespace Py {
 	}
 	pointer PInt::asList() const
 	{
-		vector<pointer> list{ asInt() };
-		return make_shared<PList>(std::move(list));
+		vector<pointer> iterable{ asInt() };
+		return make_shared<PList>(std::move(iterable));
 	}
 	pointer PInt::__add__(const pointer& other) const
 	{

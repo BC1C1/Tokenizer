@@ -56,6 +56,8 @@ namespace AST {
 		if (ifStmt) return ifStmt;
 		auto whileStmt = parseWhileStmt();
 		if (whileStmt) return whileStmt;
+		auto forStmt = parseForStmt();
+		if (forStmt) return forStmt;
 
 		return parseExpression();
 	}
@@ -79,11 +81,22 @@ namespace AST {
 
 	pointer Parser::parseAnd()
 	{
-		auto left = parseComparison();
+		auto left = parseIn();
 
 		while (!isAtEnd() && match(TokenType::AND)) {
-			auto right = parseComparison();
+			auto right = parseIn();
 			left = make_shared<Binary>(TokenType::AND, left, right);
+		}
+		return left;
+	}
+
+	pointer Parser::parseIn()
+	{
+		auto left = parseComparison();;
+
+		while (!isAtEnd() && match(TokenType::IN)) {
+			auto right = parseComparison();
+			left = make_shared<Binary>(TokenType::IN, left, right);
 		}
 		return left;
 	}
@@ -268,28 +281,48 @@ namespace AST {
 
 	pointer Parser::parseAssignment()
 	{
-		// 确认是不是赋值语句
-		if (!match(TokenType::IDENTIFIER)) return nullptr;
+		// assignment -> leftValue = expression
+		// 确认是不是赋值语句, 以左值开头
+		int cache = current;
+		auto left = parseLValue();
+		if (!left) return nullptr;
 		// 到这里current是=
 		if (!match(TokenType::ASSIGN)) {
 			// 需要回退
-			current -= 1;
+			current = cache;
 			return nullptr;
 		}
-		// 到这里已经是表达式的开头，先取出变量名
-		auto varName = tokens[current - 2].lexeme;
 		// 解析表达式
 		auto value = parseExpression();
 		// 构造assignment结点
-		return make_shared<Assignment>(varName, value);
+		return make_shared<Assignment>(left, value);
+	}
+
+	pointer Parser::parseLValue()
+	{
+		if (!match(TokenType::IDENTIFIER)) return nullptr;
+		pointer varNode = make_shared<Variable>(tokens[current - 1].lexeme);
+
+		// while支持vector[0][0]
+		while (match(TokenType::LBRACKET)) { 
+			auto indexExpr = parseExpression(); 
+			if (!match(TokenType::RBRACKET)) { 
+				throwErrorMsg("缺少右括号 ']'");
+			}
+			varNode = make_shared<Index>(varNode, indexExpr);
+		}
+
+		return varNode;
 	}
 
 	pointer Parser::parseIfStmt()
 	{
 		if (!match(TokenType::IF)) return nullptr;
 		auto condition = parseExpression();
-		comsume(TokenType::COLON, "if语句缺少冒号");
+		comsume(TokenType::COLON, "if 语句缺少冒号");
 		auto block = parseBlock();
+		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
+			throwErrorMsg("if 不可为空");
 		vector<pointer> elifs;
 		while (check(TokenType::ELIF)) {
 			auto elif = parseElifStmt();
@@ -304,16 +337,20 @@ namespace AST {
 	{
 		if (!match(TokenType::ELIF)) return nullptr;
 		auto condition = parseExpression();
-		comsume(TokenType::COLON, "elif语句缺少冒号");
+		comsume(TokenType::COLON, "elif 语句缺少冒号");
 		auto block = parseBlock();
+		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
+			throwErrorMsg("elif 不可为空");
 		return make_shared<If>(condition, block);
 	}
 
 	pointer Parser::parseElseStmt()
 	{
 		if (!match(TokenType::ELSE)) return nullptr;
-		comsume(TokenType::COLON, "else语句缺少冒号");
+		comsume(TokenType::COLON, "else 语句缺少冒号");
 		auto block = parseBlock();
+		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
+			throwErrorMsg("else 不可为空");
 		return make_shared<If>(block);
 	}
 
@@ -321,9 +358,28 @@ namespace AST {
 	{
 		if (!match(TokenType::WHILE)) return nullptr;
 		auto condition = parseExpression();
-		comsume(TokenType::COLON, "while语句缺少冒号");
+		comsume(TokenType::COLON, "while 语句缺少冒号");
 		auto block = parseBlock(true);
+		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
+			throwErrorMsg("循环体不可为空");
 		return make_shared<While>(condition, block);
+	}
+
+	pointer Parser::parseForStmt()
+	{
+		if (!match(TokenType::For)) return nullptr;
+		auto var = parsePrimary();
+		if (!var)
+			throwErrorMsg("无效的变量");
+		if (var->getType() != NodeType::Variable)
+			throwErrorMsg("for 语句只接受标识符作为循环变量");
+		comsume(TokenType::IN, "for 语句缺少in");
+		auto iterable = parseExpression();
+		comsume(TokenType::COLON, "for 语句缺少冒号");
+		auto block = parseBlock(true);
+		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
+			throwErrorMsg("循环体不可为空");
+		return make_shared<For>(var, iterable, block);
 	}
 
 	bool Parser::isAtEnd()

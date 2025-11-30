@@ -31,8 +31,8 @@ namespace Py {
 	}
 	pointer PFloat::asList() const
 	{
-		vector<pointer> list{ asFloat() };
-		return make_shared<PList>(std::move(list));
+		vector<pointer> iterable{ asFloat() };
+		return make_shared<PList>(std::move(iterable));
 	}
 	pointer PFloat::__add__(const pointer& other) const
 	{

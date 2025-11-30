@@ -1,7 +1,7 @@
 #include "Assignment.h"
 namespace AST {
-	Assignment::Assignment(const string& name, pointer& value) : ANode(NodeType::Assignment),
-		name(std::move(name)), value(value)
+	Assignment::Assignment(pointer& name, pointer& value) : ANode(NodeType::Assignment),
+		name(name), value(value)
 	{
 	}
 }

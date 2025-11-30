@@ -12,6 +12,7 @@ namespace AST {
 		Elif,
 		Else,
 		While,
+		For,
 		Binary,
 		Unary,
 		Variable,

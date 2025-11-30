@@ -24,18 +24,22 @@ namespace AST {
 		pointer parsePrintStmt();
 
 		pointer parseAssignment();
+		pointer parseLValue();
 
 		pointer parseIfStmt();
 		pointer parseElifStmt();
 		pointer parseElseStmt();
 
 		pointer parseWhileStmt();
+		pointer parseForStmt();
 	private:
 		pointer parseExpression();
 
 		pointer parseOr();
 
 		pointer parseAnd();
+
+		pointer parseIn();
 
 		pointer parseComparison();
 

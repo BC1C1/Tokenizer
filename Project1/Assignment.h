@@ -6,8 +6,8 @@ namespace AST {
 	class Assignment : public ANode
 	{
 	public:
-		Assignment(const string& name, pointer& value);
-		string name;
+		Assignment(pointer& name, pointer& value);
+		pointer name;
 		pointer value;
 	};
 }

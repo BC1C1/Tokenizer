@@ -7,10 +7,12 @@ using std::string;
 
 int main() {
     string code1 = R"(
-nameList = ['zhangsan', 'lisi', 'wangwu']
-print(nameList[0])
-print(nameList[1])
-print(nameList[2])
+list = [0, 1, 2]
+print(list)
+for i in list:
+    list[i] = 2 - i
+print(list)
+
 )";
     string code = R"(
 # 修正版：无列表操作的学生成绩管理系统

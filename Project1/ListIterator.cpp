@@ -1,20 +1,22 @@
 #include "ListIterator.h"
 namespace Py {
-	ListIterator::ListIterator(pointer list) : Iterator(), index(0)
+	ListIterator::ListIterator(pointer iterable) : Iterator(), index(0)
 	{
-		this->list = dynamic_pointer_cast<PList>(list);
+		this->iterable = dynamic_pointer_cast<PList>(iterable);
 	}
-	pointer ListIterator::get() const
+	pointer ListIterator::get()
 	{
 		if (!isEnd()) {
-			return list->get(index);
+			auto ret = iterable->get(index);
+			this->index++;
+			return ret;
 		}
 		return make_shared<Py::PNone>();
 	}
 	pointer ListIterator::get(int index)
 	{
-		if (-list->size() <= index && index < list->size()) {
-			return list->get(index);
+		if (-iterable->size() <= index && index < iterable->size()) {
+			return iterable->get(index);
 		}
 		return make_shared<Py::PNone>();
 	}
@@ -32,7 +34,7 @@ namespace Py {
 	}
 	bool ListIterator::isEnd() const
 	{
-		return index >= list->size();
+		return index >= iterable->size();
 	}
 	bool ListIterator::isRend() const
 	{
@@ -44,7 +46,7 @@ namespace Py {
 	}
 	void ListIterator::rreset()
 	{
-		index = list->size() - 1;
+		index = iterable->size() - 1;
 	}
 }
 

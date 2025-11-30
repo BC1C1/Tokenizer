@@ -14,7 +14,12 @@ std::vector<Lexer::Token> Lexer::Tokenizer::scanTokens(const std::string& text)
             result.push_back(token);
         }
     }
-    result.emplace_back(TokenType::EOF_TOKEN, "", int(lines.size()));
+    // 补全DEDENT
+    while (indentStack.back() != 0) {
+        result.emplace_back(TokenType::DEDENT, "", int(lines.size()));
+        indentStack.pop_back();
+    }
+    result.emplace_back(TokenType::EOF_TOKEN, "", int(lines.size() + 1));
     return result;
 }
 

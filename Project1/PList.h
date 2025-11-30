@@ -8,8 +8,8 @@ namespace Py {
 	{
 	public:
 		PList();
-		PList(vector<pointer>&& list);
-		PList(std::initializer_list<pointer> list);
+		PList(vector<pointer>&& iterable);
+		PList(std::initializer_list<pointer> iterable);
 
 		pointer get(int index);
 		pointer operator[](int index) const;
@@ -19,10 +19,17 @@ namespace Py {
 		virtual string toString() const override;
 
 	public:
+		virtual pointer __eq__(const pointer& other) const override;
+
 		virtual pointer __iter__() override;
 
+		virtual void __setitem__(const pointer& index, pointer obj) override;
+		virtual pointer __getitem__(const pointer& index) override;
 	private:
-		vector<pointer> list;
+		vector<pointer> iterable;
+
+	private:
+		int findIndex(const pointer& index);
 	};
 }
 

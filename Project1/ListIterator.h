@@ -6,9 +6,9 @@ namespace Py {
 	{
 	public:
 		// 这个传入的是受控的对象，本身是const但是下属元素不const
-		ListIterator(pointer list);
+		ListIterator(pointer iterable);
 
-		virtual pointer get() const override;
+		virtual pointer get() override;
 		virtual pointer get(int index) override;
 
 		virtual void next() override;
@@ -25,7 +25,7 @@ namespace Py {
 		~ListIterator() = default;
 	private:
 		int index;
-		shared_ptr<PList> list;
+		shared_ptr<PList> iterable;
 	};
 }
 

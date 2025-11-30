@@ -22,6 +22,11 @@ namespace Py {
 		return TypeToString(type);
 	}
 
+	bool PyType::operator==(PyType other)
+	{
+		return this->type == other.type;
+	}
+
 	PObject::PObject(PyType type) : type(type)
 	{
 	}
@@ -158,7 +163,18 @@ namespace Py {
 	pointer PObject::__iter__()
 	{
 		defaultNoIterError();
-		return pointer();
+		return nullptr;
+	}
+
+	void PObject::__setitem__(const pointer& index, pointer obj)
+	{
+		defaultNoSetItemError();
+	}
+
+	pointer PObject::__getitem__(const pointer& index)
+	{
+		defaultNoGetItemError();
+		return nullptr;
 	}
 
 	Environment::Environment(EPointer parent) : parent(parent)
@@ -187,6 +203,11 @@ namespace Py {
 		}
 		vars[name] = value;
 	}
+	void Environment::createThere(const string& name, shared_ptr<PObject> value)
+	{
+		// 独立代码块赋值函数
+		vars[name] = value;
+	}
 	shared_ptr<PObject> Environment::getObj(const string& name)
 	{
 		auto iter = vars.find(name);
@@ -208,6 +229,16 @@ namespace Py {
 	pointer PObject::defaultNoIterError() const
 	{
 		throw runtime_error("__iter__未实现");
+	}
+
+	void PObject::defaultNoSetItemError() const
+	{
+		throw runtime_error("__setitem__未实现");
+	}
+
+	pointer PObject::defaultNoGetItemError() const
+	{
+		throw runtime_error("__getitem__未实现");
 	}
 
 	

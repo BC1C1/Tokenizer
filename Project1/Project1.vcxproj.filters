@@ -81,6 +81,24 @@
     <ClInclude Include="While.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Index.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Iterator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ListIterator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PList.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="For.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
@@ -147,6 +165,24 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="While.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Index.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Iterator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="List.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ListIterator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PList.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="For.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

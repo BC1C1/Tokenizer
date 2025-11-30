@@ -6,9 +6,9 @@
 namespace Lexer
 {
     enum class TokenType {
-        // 关键字 (not, or 也是)
-        IF, ELSE, ELIF, WHILE, PRINT, INPUT, TRUE, FALSE,
-        // 标识符（变量名）
+        // 关键字 
+        IF, ELSE, ELIF, WHILE, PRINT, INPUT, TRUE, FALSE, IN, For,
+        // 标识符 (变量名,函数名)
         IDENTIFIER,
         // 字面量
         NUMBER, STRING,
@@ -33,8 +33,8 @@ namespace Lexer
     };
     struct Token {
         TokenType type;
-        std::string lexeme;  // 源代码中的原始字符串（如 "123.45"、"x"）
-        int line;            // 行号（报错用）挂起暂且不用
+        std::string lexeme;  // 原始字符串
+        int line;            // 行号（报错
 
         Token(TokenType t, std::string l, int ln) : type(t), lexeme(l), line(ln) {}
 
@@ -47,6 +47,8 @@ namespace Lexer
             case TokenType::INDENT: os << "INDENT"; break;
             case TokenType::DEDENT: os << "DEDENT"; break;
             case TokenType::IF: os << "IF"; break;
+            case TokenType::IN: os << "IN"; break;
+            case TokenType::For: os << "FOR"; break;
             case TokenType::ELSE: os << "ELSE"; break;
             case TokenType::ELIF: os << "ELIF"; break;
             case TokenType::WHILE: os << "WHILE"; break;
@@ -94,7 +96,9 @@ namespace Lexer
         {"False", TokenType::FALSE},
         {"or", TokenType::OR},
         {"and", TokenType::AND},
-        {"not", TokenType::NOT}
+        {"not", TokenType::NOT},
+        {"in", TokenType::IN},
+        {"for", TokenType::For}
     };
     // 我们拿到的程序是一大串由空格，缩进组成的文本，第一步是按照回车键分割字符串
     // 随后把每一行的字符串按照空格分隔，解析文本成token

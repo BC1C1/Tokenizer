@@ -21,8 +21,19 @@ namespace exe {
 		}
 		case AST::NodeType::Assignment: {
 			auto now = dynamic_pointer_cast<AST::Assignment>(currentNode);
-			auto obj = run(envir, now->value);
-			envir->assign(now->name, obj);
+			// 首先解析now->name，确认是变量还是容器
+			if (auto var = dynamic_pointer_cast<AST::Variable>(now->name))
+			{
+				auto obj = run(envir, now->value);
+				envir->assign(var->name, obj);
+			} 
+			else if (auto var = dynamic_pointer_cast<AST::Index>(now->name))
+			{
+				auto obj = run(envir, now->value);
+				auto target = run(envir, var->obj);
+				auto index = run(envir, var->expression);
+				target->__setitem__(index, obj);
+			}
 			break;
 		}
 		case AST::NodeType::If: {
@@ -92,6 +103,23 @@ namespace exe {
 			}
 			break;
 		}
+		case AST::NodeType::For: {
+			auto now = dynamic_pointer_cast<AST::For>(currentNode);
+			auto block = dynamic_pointer_cast<AST::Block>(now->block);
+			auto innerEnvir = block->environment;
+			auto var = dynamic_pointer_cast<AST::Variable>(now->var);
+			auto iterable = run(envir, now->iterable);
+			auto iter = iterable->__iter__();
+			auto iterator = dynamic_pointer_cast<Py::Iterator>(iter);
+			while (!iterator->isEnd()) {
+				// 给var赋值
+				auto obj = iterator->get();
+				innerEnvir->createThere(var->name, obj);
+				run(innerEnvir, block);
+			}
+
+			break;
+		}
 		case AST::NodeType::Binary: {
 			auto now = dynamic_pointer_cast<AST::Binary>(currentNode);
 			auto left = run(envir, now->left);
@@ -112,6 +140,21 @@ namespace exe {
 			case Lexer::TokenType::AND: return left->__and__(right);
 			case Lexer::TokenType::OR: return left->__or__(right);
 			case Lexer::TokenType::NOT: return left->__not__(right);
+			case Lexer::TokenType::IN: {
+				auto iter = right->__iter__();
+				auto iterator = dynamic_pointer_cast<Py::Iterator>(iter);
+				while (!iterator->isEnd()) {
+					auto result = left->__eq__(iterator->get());
+					auto temp = dynamic_pointer_cast<Py::PBool>(result);
+					if (!temp)
+						return make_shared<Py::PBool>(false);
+					if (temp->getValue())
+					{
+						return make_shared<Py::PBool>(true);
+					}
+				}
+				return make_shared<Py::PBool>(false);
+			}
 			default:
 				// 这里暂时这样，其实需要try这个内层swich然后catch错误继续转交
 				// 错误文本，这里也一样，是“未知的运算符”
@@ -181,15 +224,15 @@ namespace exe {
 		}
 		case AST::NodeType::List: {
 			auto now = dynamic_pointer_cast<AST::List>(currentNode);
-			vector<Py::pointer> list;
+			vector<Py::pointer> iterable;
 			for (auto& ele : now->elements) {
 				auto e = run(envir, ele);
 				if (e)
-					list.push_back(e);
+					iterable.push_back(e);
 				else
 					throwErrorMsg("无效的元素");
 			}
-			return make_shared<Py::PList>(std::move(list));
+			return make_shared<Py::PList>(std::move(iterable));
 		}
 		default:
 			throwErrorMsg("未知的结点类型");

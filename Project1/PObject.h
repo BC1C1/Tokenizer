@@ -21,6 +21,7 @@ namespace Py {
 		PyType(Type type);
 		std::string __str__();
 		Type type;
+		bool operator==(PyType other);
 	};
 	class PObject : public enable_shared_from_this<PObject>
 	{
@@ -62,14 +63,22 @@ namespace Py {
 		virtual pointer __or__(const pointer& other) const;
 		virtual pointer __not__(const pointer& other) const;
 
+		// 获取迭代器
 		virtual pointer __iter__();
 
+		// 内部元素
+		virtual void __setitem__(const pointer& index, pointer obj);
+		virtual pointer __getitem__(const pointer& index);
 
 	protected:
 		// 错误处理函数声明
 		pointer defaultOpError(const std::string& op, const pointer& other) const;
 
 		pointer defaultNoIterError() const;
+
+		void defaultNoSetItemError() const;
+
+		pointer defaultNoGetItemError() const;
 	private:
 		PyType type;
 	};
@@ -100,6 +109,7 @@ namespace Py {
 		EPointer parent;
 		~Environment();
 		void assign(const string& name, shared_ptr<PObject> value);
+		void createThere(const string& name, shared_ptr<PObject> value);
 		shared_ptr<PObject> getObj(const string& name);
 	};
 }

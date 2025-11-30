@@ -132,6 +132,7 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="Bool.h" />
     <ClInclude Include="Executor.h" />
+    <ClInclude Include="For.h" />
     <ClInclude Include="If.h" />
     <ClInclude Include="Index.h" />
     <ClInclude Include="Iterator.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Bool.cpp" />
     <ClCompile Include="Executor.cpp" />
+    <ClCompile Include="For.cpp" />
     <ClCompile Include="If.cpp" />
     <ClCompile Include="Index.cpp" />
     <ClCompile Include="Iterator.cpp" />
