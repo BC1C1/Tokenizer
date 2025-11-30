@@ -9,6 +9,7 @@ namespace Py {
 	public:
 		PList();
 		PList(vector<pointer>&& list);
+		PList(std::initializer_list<pointer> list);
 
 		pointer get(int index);
 		pointer operator[](int index) const;

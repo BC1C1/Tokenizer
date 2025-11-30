@@ -32,6 +32,14 @@ namespace Py {
 		virtual ~PObject();
 		virtual std::string toString() const = 0;
 
+		// 类型转换函数
+		virtual pointer asInt() const;
+		virtual pointer asFloat() const;
+		virtual pointer asBool() const;
+		virtual pointer asList() const;
+	protected:
+		virtual pointer noSuchCast(const string& type) const;
+
 	public:
 		// 算术运算符声明
 		virtual pointer __add__(const pointer& other) const;
@@ -55,6 +63,7 @@ namespace Py {
 		virtual pointer __not__(const pointer& other) const;
 
 		virtual pointer __iter__();
+
 
 	protected:
 		// 错误处理函数声明

@@ -12,6 +12,13 @@ namespace Py {
 		virtual string toString() const override;
 		int getValue() const;
 		void setValue(int val);
+
+		// 类型转换函数
+		virtual pointer asInt() const override;
+		virtual pointer asFloat() const override;
+		virtual pointer asBool() const override;
+		virtual pointer asList() const override;
+
 	public:
 		// 算术运算符声明
 		virtual pointer __add__(const pointer& other) const override;

@@ -16,6 +16,25 @@ namespace Py {
 	{
 		value = val;
 	}
+	pointer PBool::asInt() const
+	{
+		auto val = value ? 1 : 0;
+		return make_shared<PInt>(val);
+	}
+	pointer PBool::asFloat() const
+	{
+		auto val = value ? 1 : 0;
+		return make_shared<PFloat>(val);
+	}
+	pointer PBool::asBool() const
+	{
+		return make_shared<PBool>(value);
+	}
+	pointer PBool::asList() const
+	{
+		vector<pointer> val{ asBool() };
+		return make_shared<PList>(std::move(val));
+	}
 	pointer PBool::__eq__(const pointer& other) const
 	{
 		auto type = other->getType().type;

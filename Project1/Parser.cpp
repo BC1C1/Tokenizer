@@ -228,20 +228,6 @@ namespace AST {
 
 	pointer Parser::parseList()
 	{
-		// 参照这个 
-		/*		
-		// 确认是不是print语句
-		if (!match(TokenType::PRINT)) return nullptr;
-		comsume(TokenType::LPAREN, "缺失的左括号");
-		vector<pointer> text;
-		do {
-			if (match(TokenType::RPAREN))
-				throwErrorMsg("print缺少参数");
-			text.push_back(parseExpression());
-		} while (match(TokenType::COMMA));
-		comsume(TokenType::RPAREN, "缺失的右括号");
-		return make_shared<Print>(text);
-		*/
 		comsume(TokenType::LBRACKET, "缺失的左中括号");
 		vector<pointer> expressions;
 		while (!check(TokenType::RBRACKET)) {

@@ -1,5 +1,6 @@
 #include "Executor.h"
 namespace exe {
+	using std::vector;
 	exe::Executor::Executor(NPointer& ast) : ast(ast)
 	{
 	}
@@ -163,6 +164,32 @@ namespace exe {
 			}
 			puts(text.c_str());
 			break;
+		}
+		case AST::NodeType::Index: {
+			auto now = dynamic_pointer_cast<AST::Index>(currentNode);
+			auto obj = run(envir, now->obj);
+			auto index = run(envir, now->expression);
+			auto IntObj = index->asInt();
+			int value = dynamic_pointer_cast<Py::PInt>(IntObj)->getValue();
+			auto iter = obj->__iter__();
+			auto iterator = dynamic_pointer_cast<Py::Iterator>(iter);
+			if (!iterator) {
+				throwErrorMsg("不可迭代对象不可索引");
+			}
+			return iterator->get(value);
+			break;
+		}
+		case AST::NodeType::List: {
+			auto now = dynamic_pointer_cast<AST::List>(currentNode);
+			vector<Py::pointer> list;
+			for (auto& ele : now->elements) {
+				auto e = run(envir, ele);
+				if (e)
+					list.push_back(e);
+				else
+					throwErrorMsg("无效的元素");
+			}
+			return make_shared<Py::PList>(std::move(list));
 		}
 		default:
 			throwErrorMsg("未知的结点类型");

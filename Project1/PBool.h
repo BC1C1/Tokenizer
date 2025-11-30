@@ -9,6 +9,13 @@ namespace Py {
 		virtual string toString() const override;
 		bool getValue() const;
 		void setValue(bool val);
+
+	public:
+		virtual pointer asInt() const override;
+		virtual pointer asFloat() const override;
+		virtual pointer asBool() const override;
+		virtual pointer asList() const override;
+
 	public:
 		// 比较运算符声明
 		virtual pointer __eq__(const pointer& other) const override;

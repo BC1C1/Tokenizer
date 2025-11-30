@@ -9,6 +9,7 @@ namespace Py {
 		ListIterator(pointer list);
 
 		virtual pointer get() const override;
+		virtual pointer get(int index) override;
 
 		virtual void next() override;
 

@@ -7,34 +7,10 @@ using std::string;
 
 int main() {
     string code1 = R"(
-# 最小死循环验证用例
-input_step = 0
-score = 0
-while score != -1:
-    if input_step == 0:
-        score = 85
-        input_step = input_step + 1
-        print("input_step=0，score=85，input_step+1=", input_step)
-    elif input_step == 1:
-        score = 92
-        input_step = input_step + 1
-        print("input_step=1，score=92，input_step+1=", input_step)
-    elif input_step == 2:
-        score = 78
-        input_step = input_step + 1
-        print("input_step=2，score=78，input_step+1=", input_step)
-    elif input_step == 3:
-        score = 60
-        input_step = input_step + 1
-        print("input_step=3，score=60，input_step+1=", input_step)
-    elif input_step == 4:
-        score = 95
-        input_step = input_step + 1
-        print("input_step=4，score=95，input_step+1=", input_step)
-    else:
-        score = -1
-        print("进入else，score=-1，循环退出")
-print("循环结束")
+nameList = ['zhangsan', 'lisi', 'wangwu']
+print(nameList[0])
+print(nameList[1])
+print(nameList[2])
 )";
     string code = R"(
 # 修正版：无列表操作的学生成绩管理系统
@@ -164,7 +140,7 @@ print("=== 测试完成 ===")
     try {
         // 分词
         Tokenizer tokenizer;
-        auto tokens = tokenizer.scanTokens(code);
+        auto tokens = tokenizer.scanTokens(code1);
         printf("<---------- tokens ---------->\n");
         for (auto token : tokens) {
             std::cout << token << "\n";

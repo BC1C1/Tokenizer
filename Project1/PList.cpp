@@ -7,6 +7,10 @@ namespace Py {
 		list(list)
 	{
 	}
+	PList::PList(std::initializer_list<pointer> list) : PObject(typeMap.at(Type::List)),
+		list(list)
+	{
+	}
 	pointer PList::get(int index)
 	{
 		if (index < 0 || index >= size())

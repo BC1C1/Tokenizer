@@ -16,6 +16,23 @@ namespace Py {
 	{
 		value = val;
 	}
+	pointer PInt::asInt() const
+	{
+		return make_shared<PInt>(value);
+	}
+	pointer PInt::asFloat() const
+	{
+		return make_shared<PFloat>(value);
+	}
+	pointer PInt::asBool() const
+	{
+		return make_shared<PBool>(value != 0);
+	}
+	pointer PInt::asList() const
+	{
+		vector<pointer> list{ asInt() };
+		return make_shared<PList>(std::move(list));
+	}
 	pointer PInt::__add__(const pointer& other) const
 	{
 		auto type = other->getType().type;

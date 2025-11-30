@@ -9,7 +9,14 @@ namespace Py {
 		if (!isEnd()) {
 			return list->get(index);
 		}
-		return nullptr;
+		return make_shared<Py::PNone>();
+	}
+	pointer ListIterator::get(int index)
+	{
+		if (-list->size() <= index && index < list->size()) {
+			return list->get(index);
+		}
+		return make_shared<Py::PNone>();
 	}
 	void ListIterator::next()
 	{

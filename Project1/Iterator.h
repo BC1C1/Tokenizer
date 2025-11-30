@@ -9,6 +9,7 @@ namespace Py {
 		virtual ~Iterator() = default;
 
 		virtual pointer get() const = 0;
+		virtual pointer get(int index) = 0;
 
 		virtual void next() = 0;
 

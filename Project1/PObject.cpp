@@ -35,6 +35,36 @@ namespace Py {
 	{
 	}
 
+	pointer PObject::asInt() const
+	{
+		noSuchCast("Int");
+		return nullptr;
+	}
+
+	pointer PObject::asFloat() const
+	{
+		noSuchCast("Float");
+		return nullptr;
+	}
+
+	pointer PObject::asBool() const
+	{
+		noSuchCast("Bool");
+		return nullptr;
+	}
+
+	pointer PObject::asList() const
+	{
+		noSuchCast("List");
+		return nullptr;
+	}
+
+	pointer PObject::noSuchCast(const string& type) const
+	{
+		throw runtime_error("bad_cast_error");
+		return nullptr;
+	}
+
 	pointer PObject::__add__(const pointer& other) const
 	{
 		defaultOpError("+", other);

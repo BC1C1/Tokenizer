@@ -15,6 +15,25 @@ namespace Py {
 	{
 		value = val;
 	}
+	pointer PFloat::asInt() const
+	{
+		// 可能丢失数据
+		return make_shared<PInt>(value);
+	}
+	pointer PFloat::asFloat() const
+	{
+		return make_shared<PFloat>(value);
+	}
+	pointer PFloat::asBool() const
+	{
+		bool val = value != 0;
+		return make_shared<PBool>(val);
+	}
+	pointer PFloat::asList() const
+	{
+		vector<pointer> list{ asFloat() };
+		return make_shared<PList>(std::move(list));
+	}
 	pointer PFloat::__add__(const pointer& other) const
 	{
 		auto type = other->getType().type;
