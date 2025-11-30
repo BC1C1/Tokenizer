@@ -11,6 +11,7 @@ namespace exe {
 	{
 	public:
 		Executor(NPointer& ast);
+		void preScan(NPointer block);
 		PPointer run(EPointer envir = nullptr, const NPointer& node = nullptr);
 	private:
 		void throwErrorMsg(const string& text = "");

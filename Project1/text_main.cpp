@@ -7,14 +7,8 @@ using std::string;
 
 int main() {
     string code1 = R"(
-list2 = [0, 1, 2]
-list = [0, 1, 2]
-print(list)
-for i in list:
-    list[i] = 2 - i
-for i in list2:
-    print(list[i])
-
+def add(a, b):
+    return a + b
 )";
     string code = R"(
 # 修正版：无列表操作的学生成绩管理系统

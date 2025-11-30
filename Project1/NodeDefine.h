@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 namespace AST {
+	using std::enable_shared_from_this;
 	using std::shared_ptr;
 	using std::vector;
 	enum class NodeType {
@@ -21,10 +22,13 @@ namespace AST {
 		List,
 		Index,
 		Bool,
-		Print 
+		Print,
+		FunctionDefine,
+		Return,
 	};
 
-	class ANode {
+	class ANode : public enable_shared_from_this<ANode>
+	{
 	public:
 		using pointer = shared_ptr<ANode>;
 	public:

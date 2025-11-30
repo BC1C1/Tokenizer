@@ -102,6 +102,15 @@
     <ClInclude Include="Float.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="FunctionDefine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Return.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PFunction.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
@@ -189,6 +198,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Float.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionDefine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Return.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PFunction.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

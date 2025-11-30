@@ -58,6 +58,10 @@ namespace AST {
 		if (whileStmt) return whileStmt;
 		auto forStmt = parseForStmt();
 		if (forStmt) return forStmt;
+		auto functionStmt = parseFunction();
+		if (functionStmt) return functionStmt;
+		auto returnStmt = parseReturn();
+		if (returnStmt) return returnStmt;
 
 		return parseExpression();
 	}
@@ -268,6 +272,48 @@ namespace AST {
 	{
 		std::cerr << "Error (line " << tokens[current].line << "): " << text << "\n";
 		exit(1);
+	}
+
+	pointer Parser::parseReturn()
+	{
+		if (!match(TokenType::RETURN)) return nullptr;
+		auto expression = parseExpression();
+		if (expression)
+			return make_shared<Return>(true, expression);
+		return make_shared<Return>(false, expression);
+	}
+
+	pointer Parser::parseFunction()
+	{
+		if (!match(TokenType::DEF)) return nullptr;
+		if (!match(TokenType::IDENTIFIER)) {
+			current--;
+			return nullptr;
+		}
+		string name = tokens[current - 1].lexeme;
+		comsume(TokenType::LPAREN, "函数列表缺少左括号");
+		vector<pointer> vars;
+		while (!check(TokenType::RPAREN)) {
+			auto ele = parsePrimary();
+			if (ele && ele->getType() == NodeType::Variable)
+				vars.push_back(ele);
+			else
+				throwErrorMsg("无效的参数");
+			if (match(TokenType::COMMA)) {
+				continue;
+			}
+			else if (!check(TokenType::RPAREN)) {
+				throwErrorMsg("元素之间缺少逗号");
+			}
+		}
+		vector<string> params;
+		for (auto& v : vars) {
+			params.push_back(dynamic_pointer_cast<Variable>(v)->name);
+		}
+		comsume(TokenType::RPAREN, "函数列表缺少右括号");
+		comsume(TokenType::COLON, "函数定义缺少冒号");
+		auto block = parseBlock(false);
+		return make_shared<FunctionDefine>(name, std::move(params), block);
 	}
 
 	pointer Parser::parsePrintStmt()

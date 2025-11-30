@@ -4,6 +4,21 @@ namespace exe {
 	exe::Executor::Executor(NPointer& ast) : ast(ast)
 	{
 	}
+	void Executor::preScan(NPointer b)
+	{
+		auto block = dynamic_pointer_cast<AST::Block>(b);
+		auto& OutEnvir = block->environment; // shared_ptr复制了也没关系
+		for (auto& s : block->statements) {
+			if (s->getType() == AST::NodeType::FunctionDefine) {
+				auto function = dynamic_pointer_cast<AST::FunctionDefine>(s);
+				// 构造函数对象
+				auto obj = make_shared<Py::PFunction>(function->parmaNames, function->block);
+				OutEnvir->assign(function->name, obj);
+				// 对于def中嵌套的def也要处理
+				preScan(function->block);
+			}
+		}
+	}
 	PPointer Executor::run(EPointer envir, const NPointer& node)
 	{
 		auto currentNode = node ? node : ast;
@@ -14,6 +29,8 @@ namespace exe {
 		case AST::NodeType::Block: {
 			// 按顺序执行所有语句
 			auto now = dynamic_pointer_cast<AST::Block>(currentNode);
+			// 先预扫描所有函数
+			preScan(now);
 			for (auto& statement : now->statements) {
 				run(now->environment, statement);
 			}
@@ -238,6 +255,11 @@ namespace exe {
 					throwErrorMsg("无效的元素");
 			}
 			return make_shared<Py::PList>(std::move(iterable));
+		}
+		case AST::NodeType::FunctionDefine: {
+			// 跳过，什么也不做
+			// 主要是预扫描构造的时候对于函数的参数名表是用移动构造
+			break;
 		}
 		default:
 			throwErrorMsg("未知的结点类型");

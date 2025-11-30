@@ -31,3 +31,7 @@
 #include "For.h"
 #include "Int.h"
 #include "Float.h"
+#include "FunctionDefine.h"
+#include "Return.h"
+
+#include "PFunction.h"

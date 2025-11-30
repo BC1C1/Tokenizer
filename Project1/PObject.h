@@ -14,7 +14,7 @@ namespace Py {
 	using std::make_shared;
 	using std::runtime_error;
 	enum class Type {
-		Int, Float, Str, Bool, None, Undefined, Iterator, List
+		Int, Float, Str, Bool, None, Undefined, Iterator, List, FunctionDefine
 	};
 	std::string TypeToString(Type type);
 	struct PyType {
@@ -91,7 +91,8 @@ namespace Py {
 		{Type::Bool, PyType(Type::Bool)},
 		{Type::None, PyType(Type::None)},
 		{Type::Iterator, PyType(Type::Iterator)},
-		{Type::List, PyType{Type::List}}
+		{Type::List, PyType{Type::List}},
+		{Type::FunctionDefine, PyType{Type::FunctionDefine}}
 	};
 	class PInt;
 	class PFloat;
@@ -100,6 +101,7 @@ namespace Py {
 	class PNone;
 	class Iterator;
 	class PList;
+	class PFunction;
 
 	class Environment {
 		using EPointer = std::shared_ptr<Environment>;
@@ -110,6 +112,7 @@ namespace Py {
 		~Environment();
 		void assign(const string& name, shared_ptr<PObject> value);
 		void createThere(const string& name, shared_ptr<PObject> value);
+		void throwParent();
 		shared_ptr<PObject> getObj(const string& name);
 	};
 }

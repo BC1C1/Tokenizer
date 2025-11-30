@@ -134,6 +134,7 @@
     <ClInclude Include="Executor.h" />
     <ClInclude Include="Float.h" />
     <ClInclude Include="For.h" />
+    <ClInclude Include="FunctionDefine.h" />
     <ClInclude Include="If.h" />
     <ClInclude Include="Index.h" />
     <ClInclude Include="Int.h" />
@@ -144,12 +145,14 @@
     <ClInclude Include="Parser.h" />
     <ClInclude Include="PBool.h" />
     <ClInclude Include="PFloat.h" />
+    <ClInclude Include="PFunction.h" />
     <ClInclude Include="PInt.h" />
     <ClInclude Include="PList.h" />
     <ClInclude Include="PNone.h" />
     <ClInclude Include="PObject.h" />
     <ClInclude Include="Print.h" />
     <ClInclude Include="PStr.h" />
+    <ClInclude Include="Return.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="Tokenizer.h" />
     <ClInclude Include="TypeDefine.h" />
@@ -165,6 +168,7 @@
     <ClCompile Include="Executor.cpp" />
     <ClCompile Include="Float.cpp" />
     <ClCompile Include="For.cpp" />
+    <ClCompile Include="FunctionDefine.cpp" />
     <ClCompile Include="If.cpp" />
     <ClCompile Include="Index.cpp" />
     <ClCompile Include="Int.cpp" />
@@ -175,12 +179,14 @@
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="PBool.cpp" />
     <ClCompile Include="PFloat.cpp" />
+    <ClCompile Include="PFunction.cpp" />
     <ClCompile Include="PInt.cpp" />
     <ClCompile Include="PList.cpp" />
     <ClCompile Include="PNone.cpp" />
     <ClCompile Include="PObject.cpp" />
     <ClCompile Include="Print.cpp" />
     <ClCompile Include="PStr.cpp" />
+    <ClCompile Include="Return.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="text_main.cpp" />
     <ClCompile Include="Tokenizer.cpp" />

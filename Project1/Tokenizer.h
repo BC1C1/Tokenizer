@@ -8,6 +8,7 @@ namespace Lexer
     enum class TokenType {
         // 关键字 
         IF, ELSE, ELIF, WHILE, PRINT, INPUT, TRUE, FALSE, IN, For,
+        DEF, RETURN,
         // 标识符 (变量名,函数名)
         IDENTIFIER,
         // 字面量
@@ -82,6 +83,8 @@ namespace Lexer
             case TokenType::ERROR: os << "ERROR"; break;
             case TokenType::INT: os << "INT"; break;
             case TokenType::FLOAT: os << "FLOAT"; break;
+            case TokenType::DEF: os << "DEF"; break;
+            case TokenType::RETURN: os << "RETURN"; break;
             }
             os << ", '" << token.lexeme << "', line " << token.line << ")";
             return os;
@@ -100,7 +103,9 @@ namespace Lexer
         {"and", TokenType::AND},
         {"not", TokenType::NOT},
         {"in", TokenType::IN},
-        {"for", TokenType::For}
+        {"for", TokenType::For},
+        {"def", TokenType::DEF},
+        {"return", TokenType::RETURN}
     };
     // 我们拿到的程序是一大串由空格，缩进组成的文本，第一步是按照回车键分割字符串
     // 随后把每一行的字符串按照空格分隔，解析文本成token

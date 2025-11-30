@@ -9,6 +9,9 @@ namespace Py {
 		case Type::Str: return "Str";
 		case Type::Bool: return "Bool";
 		case Type::None: return "None";
+		case Type::Iterator: return "Iterator";
+		case Type::List: return "List";
+		case Type::FunctionDefine: return "Function";
 		default: return "Undefined";
 		}
 	}
@@ -207,6 +210,10 @@ namespace Py {
 	{
 		// 独立代码块赋值函数
 		vars[name] = value;
+	}
+	void Environment::throwParent()
+	{
+		parent = nullptr;
 	}
 	shared_ptr<PObject> Environment::getObj(const string& name)
 	{
