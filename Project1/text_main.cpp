@@ -7,11 +7,13 @@ using std::string;
 
 int main() {
     string code1 = R"(
+list2 = [0, 1, 2]
 list = [0, 1, 2]
 print(list)
 for i in list:
     list[i] = 2 - i
-print(list)
+for i in list2:
+    print(list[i])
 
 )";
     string code = R"(

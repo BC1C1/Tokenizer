@@ -54,9 +54,6 @@
     <ClInclude Include="Variable.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Number.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="String.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -97,6 +94,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="For.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Int.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Float.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -140,9 +143,6 @@
     <ClCompile Include="Variable.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Number.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="String.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -183,6 +183,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="For.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Int.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Float.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

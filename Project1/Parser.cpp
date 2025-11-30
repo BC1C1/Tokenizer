@@ -171,10 +171,16 @@ namespace AST {
 			ret = make_shared<String>(token.lexeme);
 			break;
 		}
-		case Lexer::TokenType::NUMBER: {
+		case Lexer::TokenType::INT: {
+			current += 1;
+			int value = std::stoi(token.lexeme);
+			ret = make_shared<Int>(value);
+			break;
+		}
+		case Lexer::TokenType::FLOAT: {
 			current += 1;
 			double value = std::stod(token.lexeme);
-			ret = make_shared<Number>(value);
+			ret = make_shared<Float>(value);
 			break;
 		}
 		case Lexer::TokenType::TRUE: {

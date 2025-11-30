@@ -16,7 +16,7 @@ namespace AST {
 		Binary,
 		Unary,
 		Variable,
-		Number,
+		Number, Int, Float,
 		String,
 		List,
 		Index,

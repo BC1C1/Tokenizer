@@ -15,7 +15,6 @@
 #include "While.h"
 #include "String.h"
 #include "Variable.h"
-#include "Number.h"
 #include "Bool.h"
 #include "Print.h"
 
@@ -30,3 +29,5 @@
 #include "List.h"
 #include "Index.h"
 #include "For.h"
+#include "Int.h"
+#include "Float.h"

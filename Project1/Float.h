@@ -1,15 +1,13 @@
 #pragma once
 #include "TypeDefine.h"
 #include "NodeDefine.h"
-#include "Tokenizer.h"
 namespace AST {
-	using Lexer::TokenType;
-	class Number : public ANode
+	class Float : public ANode
 	{
 	public:
-		Number(double value);
+		Float(double val);
 		double value;
 	};
-}
 
+}
 

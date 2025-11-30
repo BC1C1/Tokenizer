@@ -11,7 +11,8 @@ namespace Lexer
         // 标识符 (变量名,函数名)
         IDENTIFIER,
         // 字面量
-        NUMBER, STRING,
+        INT, FLOAT,
+        STRING,
         // 运算符
         PLUS, MINUS, STAR, SLASH, MOD,  // 算术
         EQ, NEQ, LT, GT, LTE, GTE,      // 比较
@@ -57,7 +58,6 @@ namespace Lexer
             case TokenType::TRUE: os << "TRUE"; break;
             case TokenType::FALSE: os << "FALSE"; break;
             case TokenType::IDENTIFIER: os << "IDENTIFIER"; break;
-            case TokenType::NUMBER: os << "NUMBER"; break;
             case TokenType::STRING: os << "STRING"; break;
             case TokenType::PLUS: os << "PLUS"; break;
             case TokenType::MINUS: os << "MINUS"; break;
@@ -80,6 +80,8 @@ namespace Lexer
             case TokenType::RBRACKET: os << "RBRACKET"; break;
             case TokenType::EOF_TOKEN: os << "EOF"; break;
             case TokenType::ERROR: os << "ERROR"; break;
+            case TokenType::INT: os << "INT"; break;
+            case TokenType::FLOAT: os << "FLOAT"; break;
             }
             os << ", '" << token.lexeme << "', line " << token.line << ")";
             return os;

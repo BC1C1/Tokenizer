@@ -142,7 +142,10 @@ std::vector<Lexer::Token> Lexer::Tokenizer::scanPartToken(const std::string& lin
                 tokens.emplace_back(TokenType::ERROR, lexeme, lineNum);
             }
             else {
-                tokens.emplace_back(TokenType::NUMBER, lexeme, lineNum);
+                if (hasDot)
+                    tokens.emplace_back(TokenType::FLOAT, lexeme, lineNum);
+                else
+                    tokens.emplace_back(TokenType::INT, lexeme, lineNum);
             }
         }
         else if (c == '"' || c == '\'') // 字符串解析

@@ -181,8 +181,13 @@ namespace exe {
 			return envir->getObj(now->name);
 			break;
 		}
-		case AST::NodeType::Number: {
-			auto now = dynamic_pointer_cast<AST::Number>(currentNode);
+		case AST::NodeType::Int: {
+			auto now = dynamic_pointer_cast<AST::Int>(currentNode);
+			return make_shared<Py::PInt>(now->value);
+			break;
+		}
+		case AST::NodeType::Float: {
+			auto now = dynamic_pointer_cast<AST::Float>(currentNode);
 			return make_shared<Py::PFloat>(now->value);
 			break;
 		}
