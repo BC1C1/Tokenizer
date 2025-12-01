@@ -2,11 +2,13 @@
 #include "PObject.h"
 #include "TypeDefine.h"
 namespace Py {
+	using std::vector;
+	using std::string;
 	class PFunction : public PObject
 	{
 	public:
 		// define构造的时候需要参数表和执行方法
-		PFunction(vector<string>&& params, AST::pointer block);
+		PFunction(vector<string>& params, AST::pointer block);
 
 		// 执行函数的时候Call结点保存函数名和参数表，
 		// 执行的时候传参数，从调用函数的环境中获取引用，然后shared_from_this地

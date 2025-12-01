@@ -70,6 +70,8 @@ namespace Py {
 		virtual void __setitem__(const pointer& index, pointer obj);
 		virtual pointer __getitem__(const pointer& index);
 
+		// 
+
 	protected:
 		// 错误处理函数声明
 		pointer defaultOpError(const std::string& op, const pointer& other) const;

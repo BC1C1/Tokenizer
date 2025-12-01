@@ -18,7 +18,7 @@ namespace Py {
 	pointer PFloat::asInt() const
 	{
 		// 可能丢失数据
-		return make_shared<PInt>(value);
+		return make_shared<PInt>(static_cast<int>(value));
 	}
 	pointer PFloat::asFloat() const
 	{
@@ -59,12 +59,13 @@ namespace Py {
 				throw runtime_error("尝试转换为Bool时失败");
 			}
 			int val = boolOther->getValue() ? 1 : 0;
-			return make_shared<PInt>(value + double(val));
+			return make_shared<PInt>(static_cast<int>(value + double(val)));
 		}
 		case Type::Undefined:
 		default:
 			defaultOpError("+", other);
 		}
+		return nullptr;
 	}
 	pointer PFloat::__sub__(const pointer& other) const
 	{
@@ -91,7 +92,7 @@ namespace Py {
 				throw runtime_error("尝试转换为Bool时失败");
 			}
 			int val = boolOther->getValue() ? 1 : 0;
-			return make_shared<PInt>(value - val);
+			return make_shared<PInt>(static_cast<int>(value - val));
 		}
 		case Type::None: {
 			return make_shared<PFloat>(-value);
@@ -101,6 +102,7 @@ namespace Py {
 			defaultOpError("-", other);
 			return nullptr; // 无实际作用仅用于消除警告
 		}
+		return nullptr;
 	}
 	pointer PFloat::__mul__(const pointer& other) const
 	{
@@ -127,13 +129,14 @@ namespace Py {
 				throw runtime_error("尝试转换为Bool时失败");
 			}
 			int val = boolOther->getValue() ? 1 : 0;
-			return make_shared<PInt>(value * val);
+			return make_shared<PInt>(static_cast<int>(value * val));
 		}
 		case Type::Undefined:
 		default:
 			defaultOpError("*", other);
 			return nullptr; // 无实际作用仅用于消除警告
 		}
+		return nullptr;
 	}
 	pointer PFloat::__truediv__(const pointer& other) const
 	{
@@ -163,6 +166,7 @@ namespace Py {
 			defaultOpError("/", other);
 			return nullptr; // 无实际作用仅用于消除警告
 		}
+		return nullptr;
 	}
 	pointer PFloat::__pow__(const pointer& other) const
 	{
@@ -192,6 +196,7 @@ namespace Py {
 			defaultOpError("**", other);
 			return nullptr; // 无实际作用仅用于消除警告
 		}
+		return nullptr;
 	}
 	pointer PFloat::__eq__(const pointer& other) const
 	{
@@ -219,10 +224,35 @@ namespace Py {
 			defaultOpError("==", other);
 			return nullptr; // 无实际作用仅用于消除警告
 		}
+		return nullptr;
 	}
 	pointer PFloat::__ne__(const pointer& other) const
 	{
-		return __eq__(other)->__not__(make_shared<PNone>());
+		auto type = other->getType().type;
+		switch (type)
+		{
+		case Type::Int: {
+			auto intOther = dynamic_pointer_cast<PInt>(other);
+			if (!intOther) {
+				throw runtime_error("尝试转换为Int时失败");
+			}
+			bool val = value != intOther->getValue();
+			return make_shared<PBool>(val);
+		}
+		case Type::Float: {
+			auto floatOther = dynamic_pointer_cast<PFloat>(other);
+			if (!floatOther) {
+				throw runtime_error("尝试转换为Float时失败");
+			}
+			bool val = value != floatOther->getValue();
+			return make_shared<PBool>(val);
+		}
+		case Type::Undefined:
+		default:
+			defaultOpError("!=", other);
+			return nullptr; // 无实际作用仅用于消除警告
+		}
+		return nullptr;
 	}
 	pointer PFloat::__lt__(const pointer& other) const
 	{
@@ -250,6 +280,7 @@ namespace Py {
 			defaultOpError(">", other);
 			return nullptr; // 无实际作用仅用于消除警告
 		}
+		return nullptr;
 	}
 	pointer PFloat::__le__(const pointer& other) const
 	{
@@ -277,6 +308,7 @@ namespace Py {
 			defaultOpError("<=", other);
 			return nullptr; // 无实际作用仅用于消除警告
 		}
+		return nullptr;
 	}
 	pointer PFloat::__gt__(const pointer& other) const
 	{
@@ -304,6 +336,7 @@ namespace Py {
 			defaultOpError(">", other);
 			return nullptr; // 无实际作用仅用于消除警告
 		}
+		return nullptr;
 	}
 	pointer PFloat::__ge__(const pointer& other) const
 	{
@@ -331,5 +364,6 @@ namespace Py {
 			defaultOpError(">=", other);
 			return nullptr; // 无实际作用仅用于消除警告
 		}
+		return nullptr;
 	}
 }
