@@ -32,7 +32,11 @@ namespace exe {
 			// 先预扫描所有函数
 			preScan(now);
 			for (auto& statement : now->statements) {
-				run(now->environment, statement);
+				auto result = run(now->environment, statement);
+				if (!result)
+					continue;
+				if (result->getType().type == Py::Type::ReturnValue)
+					return result;
 			}
 			break;
 		}
@@ -198,6 +202,16 @@ namespace exe {
 			return envir->getObj(now->name);
 			break;
 		}
+		case AST::NodeType::Call: {
+			auto now = dynamic_pointer_cast<AST::Call>(currentNode);
+			auto caller = run(envir, now->caller);
+			vector<Py::pointer> params;
+			for (auto& p : now->params) {
+				params.push_back(run(envir, p));
+			}
+			return caller->__call__(make_shared<Py::PList>(std::move(params)), envir);
+			break;
+		}
 		case AST::NodeType::Int: {
 			auto now = dynamic_pointer_cast<AST::Int>(currentNode);
 			return make_shared<Py::PInt>(now->value);
@@ -260,6 +274,18 @@ namespace exe {
 			// 跳过，什么也不做
 			// 主要是预扫描构造的时候对于函数的参数名表是用移动构造
 			break;
+		}
+		case AST::NodeType::Return: {
+			auto now = dynamic_pointer_cast<AST::Return>(currentNode);
+			if (now->iscontain) {
+				auto obj = run(envir, now->expression);
+				return make_shared<Py::PReturnValue>(obj);
+			}
+			else {
+				auto none = make_shared<Py::PNone>();
+				return make_shared<Py::PReturnValue>(none);
+			}
+
 		}
 		default:
 			throwErrorMsg("未知的结点类型");

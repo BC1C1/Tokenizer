@@ -14,7 +14,8 @@ namespace Py {
 	using std::make_shared;
 	using std::runtime_error;
 	enum class Type {
-		Int, Float, Str, Bool, None, Undefined, Iterator, List, FunctionDefine
+		Int, Float, Str, Bool, None, Undefined, Iterator, List, FunctionDefine,
+		ReturnValue
 	};
 	std::string TypeToString(Type type);
 	struct PyType {
@@ -23,6 +24,7 @@ namespace Py {
 		Type type;
 		bool operator==(PyType other);
 	};
+	class Environment;
 	class PObject : public enable_shared_from_this<PObject>
 	{
 	public:
@@ -70,7 +72,8 @@ namespace Py {
 		virtual void __setitem__(const pointer& index, pointer obj);
 		virtual pointer __getitem__(const pointer& index);
 
-		// 
+		// 对象的调用办法
+		virtual pointer __call__(const pointer& params, shared_ptr<Environment> envir);
 
 	protected:
 		// 错误处理函数声明
@@ -81,6 +84,8 @@ namespace Py {
 		void defaultNoSetItemError() const;
 
 		pointer defaultNoGetItemError() const;
+
+		pointer defaultNoCallFuncError() const;
 	private:
 		PyType type;
 	};
@@ -94,7 +99,8 @@ namespace Py {
 		{Type::None, PyType(Type::None)},
 		{Type::Iterator, PyType(Type::Iterator)},
 		{Type::List, PyType{Type::List}},
-		{Type::FunctionDefine, PyType{Type::FunctionDefine}}
+		{Type::FunctionDefine, PyType{Type::FunctionDefine}},
+		{Type::ReturnValue, PyType{Type::ReturnValue}},
 	};
 	class PInt;
 	class PFloat;
@@ -104,6 +110,7 @@ namespace Py {
 	class Iterator;
 	class PList;
 	class PFunction;
+	class PReturnValue;
 
 	class Environment {
 		using EPointer = std::shared_ptr<Environment>;
@@ -115,6 +122,8 @@ namespace Py {
 		void assign(const string& name, shared_ptr<PObject> value);
 		void createThere(const string& name, shared_ptr<PObject> value);
 		void throwParent();
+		void setParent(EPointer parent);
+		void clear();
 		shared_ptr<PObject> getObj(const string& name);
 	};
 }

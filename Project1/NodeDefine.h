@@ -25,6 +25,7 @@ namespace AST {
 		Print,
 		FunctionDefine,
 		Return,
+		Call,
 	};
 
 	class ANode : public enable_shared_from_this<ANode>

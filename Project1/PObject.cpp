@@ -180,6 +180,12 @@ namespace Py {
 		return nullptr;
 	}
 
+	pointer PObject::__call__(const pointer& params, shared_ptr<Environment> envir)
+	{
+		defaultNoCallFuncError();
+		return nullptr;
+	}
+
 	Environment::Environment(EPointer parent) : parent(parent)
 	{
 	}
@@ -215,6 +221,14 @@ namespace Py {
 	{
 		parent = nullptr;
 	}
+	void Environment::setParent(EPointer parent)
+	{
+		this->parent = parent;
+	}
+	void Environment::clear()
+	{
+		vars.clear();
+	}
 	shared_ptr<PObject> Environment::getObj(const string& name)
 	{
 		auto iter = vars.find(name);
@@ -246,6 +260,11 @@ namespace Py {
 	pointer PObject::defaultNoGetItemError() const
 	{
 		throw runtime_error("__getitem__未实现");
+	}
+
+	pointer PObject::defaultNoCallFuncError() const
+	{
+		throw runtime_error("__call__未实现");
 	}
 
 	

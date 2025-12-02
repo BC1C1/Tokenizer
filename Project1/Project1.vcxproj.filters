@@ -111,6 +111,12 @@
     <ClInclude Include="PFunction.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Call.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PReturnValue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
@@ -207,6 +213,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="PFunction.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Call.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PReturnValue.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -131,6 +131,7 @@
     <ClInclude Include="Binary.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Bool.h" />
+    <ClInclude Include="Call.h" />
     <ClInclude Include="Executor.h" />
     <ClInclude Include="Float.h" />
     <ClInclude Include="For.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="PList.h" />
     <ClInclude Include="PNone.h" />
     <ClInclude Include="PObject.h" />
+    <ClInclude Include="PReturnValue.h" />
     <ClInclude Include="Print.h" />
     <ClInclude Include="PStr.h" />
     <ClInclude Include="Return.h" />
@@ -165,6 +167,7 @@
     <ClCompile Include="Binary.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Bool.cpp" />
+    <ClCompile Include="Call.cpp" />
     <ClCompile Include="Executor.cpp" />
     <ClCompile Include="Float.cpp" />
     <ClCompile Include="For.cpp" />
@@ -184,6 +187,7 @@
     <ClCompile Include="PList.cpp" />
     <ClCompile Include="PNone.cpp" />
     <ClCompile Include="PObject.cpp" />
+    <ClCompile Include="PReturnValue.cpp" />
     <ClCompile Include="Print.cpp" />
     <ClCompile Include="PStr.cpp" />
     <ClCompile Include="Return.cpp" />

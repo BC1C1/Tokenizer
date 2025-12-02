@@ -35,3 +35,7 @@
 #include "Return.h"
 
 #include "PFunction.h"
+
+#include "Call.h"
+
+#include "PReturnValue.h"

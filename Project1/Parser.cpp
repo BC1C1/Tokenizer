@@ -240,10 +240,37 @@ namespace AST {
 			current += 1;
 			break;
 		}
-		while (match(TokenType::LBRACKET)) {
-			auto indexExpr = parseExpression();
-			comsume(TokenType::RBRACKET, "索引缺少右分隔符 ']'");
-			ret = make_shared<AST::Index>(ret, indexExpr);
+
+		while (check(TokenType::LBRACKET) || check(TokenType::LPAREN)) {
+			auto type = tokens[current].type;
+			current++;
+			switch (type)
+			{
+
+			case Lexer::TokenType::LPAREN: {
+				vector<pointer> expressions;
+				while (!check(TokenType::RPAREN)) {
+					auto ele = parseExpression();
+					if (ele)
+						expressions.push_back(ele);
+					if (match(TokenType::COMMA)) {
+						continue;
+					}
+					else if (!check(TokenType::RPAREN)) {
+						throwErrorMsg("元素之间缺少逗号");
+					}
+				}
+				comsume(TokenType::RPAREN, "缺少右括号");
+				ret = make_shared<AST::Call>(ret, std::move(expressions));
+				break;
+			}
+			case Lexer::TokenType::LBRACKET: {
+				auto indexExpr = parseExpression();
+				comsume(TokenType::RBRACKET, "索引缺少右分隔符 ']'");
+				ret = make_shared<AST::Index>(ret, indexExpr);
+				break;
+			}
+			}
 		}
 
 		return ret;

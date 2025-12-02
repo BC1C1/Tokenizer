@@ -7,8 +7,13 @@ using std::string;
 
 int main() {
     string code1 = R"(
-def add(a, b):
-    return a + b
+def add(param1, param2):
+    return param1 + param2
+a = 1
+b = 2
+d = 123
+c = add(a, b)
+print(c)
 )";
     string code = R"(
 # 修正版：无列表操作的学生成绩管理系统

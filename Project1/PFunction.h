@@ -4,6 +4,7 @@
 namespace Py {
 	using std::vector;
 	using std::string;
+	using EPointer = shared_ptr<Environment>;
 	class PFunction : public PObject
 	{
 	public:
@@ -18,6 +19,8 @@ namespace Py {
 		// 不需要内置run函数
 
 		virtual string toString() const override;
+
+		virtual pointer __call__(const pointer& params, EPointer envir) override;
 	private:
 		vector<string> params;
 		AST::pointer block;
