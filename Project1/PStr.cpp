@@ -30,6 +30,7 @@ namespace Py {
 		default:
 			defaultOpError("+", other);
 		}
+		return nullptr;
 	}
 	pointer PStr::__mul__(const pointer& other) const
 	{
@@ -49,6 +50,7 @@ namespace Py {
 		default:
 			defaultOpError("+", other);
 		}
+		return nullptr;
 	}
 	pointer PStr::__eq__(const pointer& other) const
 	{
@@ -66,6 +68,7 @@ namespace Py {
 		default:
 			defaultOpError("==", other);
 		}
+		return nullptr;
 	}
 	pointer PStr::__ne__(const pointer& other) const
 	{
@@ -83,6 +86,7 @@ namespace Py {
 		default:
 			defaultOpError("!=", other);
 		}
+		return nullptr;
 	}
 	pointer PStr::__lt__(const pointer& other) const
 	{
@@ -100,6 +104,7 @@ namespace Py {
 		default:
 			defaultOpError("<", other);
 		}
+		return nullptr;
 	}
 	pointer PStr::__le__(const pointer& other) const
 	{
@@ -117,6 +122,7 @@ namespace Py {
 		default:
 			defaultOpError("<=", other);
 		}
+		return nullptr;
 	}
 	pointer PStr::__gt__(const pointer& other) const
 	{
@@ -134,6 +140,7 @@ namespace Py {
 		default:
 			defaultOpError(">", other);
 		}
+		return nullptr;
 	}
 	pointer PStr::__ge__(const pointer& other) const
 	{
@@ -151,5 +158,6 @@ namespace Py {
 		default:
 			defaultOpError(">=", other);
 		}
+		return nullptr;
 	}
 }

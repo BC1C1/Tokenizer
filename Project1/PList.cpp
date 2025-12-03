@@ -23,7 +23,7 @@ namespace Py {
 	}
 	int PList::size() const
 	{
-		return iterable.size();
+		return static_cast<int>(iterable.size());
 	}
 	string PList::toString() const
 	{

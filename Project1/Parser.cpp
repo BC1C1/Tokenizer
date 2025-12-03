@@ -339,7 +339,7 @@ namespace AST {
 		}
 		comsume(TokenType::RPAREN, "函数列表缺少右括号");
 		comsume(TokenType::COLON, "函数定义缺少冒号");
-		auto block = parseBlock(false);
+		auto block = parseBlock(true);
 		return make_shared<FunctionDefine>(name, std::move(params), block);
 	}
 
@@ -399,7 +399,7 @@ namespace AST {
 		if (!match(TokenType::IF)) return nullptr;
 		auto condition = parseExpression();
 		comsume(TokenType::COLON, "if 语句缺少冒号");
-		auto block = parseBlock();
+		auto block = parseBlock(false);
 		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
 			throwErrorMsg("if 不可为空");
 		vector<pointer> elifs;
@@ -417,7 +417,7 @@ namespace AST {
 		if (!match(TokenType::ELIF)) return nullptr;
 		auto condition = parseExpression();
 		comsume(TokenType::COLON, "elif 语句缺少冒号");
-		auto block = parseBlock();
+		auto block = parseBlock(false);
 		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
 			throwErrorMsg("elif 不可为空");
 		return make_shared<If>(condition, block);
@@ -427,7 +427,7 @@ namespace AST {
 	{
 		if (!match(TokenType::ELSE)) return nullptr;
 		comsume(TokenType::COLON, "else 语句缺少冒号");
-		auto block = parseBlock();
+		auto block = parseBlock(false);
 		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
 			throwErrorMsg("else 不可为空");
 		return make_shared<If>(block);
@@ -438,7 +438,7 @@ namespace AST {
 		if (!match(TokenType::WHILE)) return nullptr;
 		auto condition = parseExpression();
 		comsume(TokenType::COLON, "while 语句缺少冒号");
-		auto block = parseBlock(true);
+		auto block = parseBlock(false);
 		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
 			throwErrorMsg("循环体不可为空");
 		return make_shared<While>(condition, block);
@@ -455,7 +455,7 @@ namespace AST {
 		comsume(TokenType::IN, "for 语句缺少in");
 		auto iterable = parseExpression();
 		comsume(TokenType::COLON, "for 语句缺少冒号");
-		auto block = parseBlock(true);
+		auto block = parseBlock(false);
 		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
 			throwErrorMsg("循环体不可为空");
 		return make_shared<For>(var, iterable, block);
