@@ -15,7 +15,7 @@ namespace AST {
 		Parser(const vector<Token> tokens);
 		pointer parse();
 	private:
-		pointer parseBlock(bool isCreateNewEnvironment = false);
+		pointer parseBlock();
 
 
 		pointer parseStatement();
@@ -74,7 +74,6 @@ namespace AST {
 	private:
 		const vector<Token> tokens;
 		size_t current;
-		EPointer currentEnvironment;
 	};
 }
 

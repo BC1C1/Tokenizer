@@ -5,25 +5,27 @@ namespace Py {
 	using std::vector;
 	using std::string;
 	using EPointer = shared_ptr<Environment>;
+	using NPointer = shared_ptr<AST::ANode>;
 	class PFunction : public PObject
 	{
 	public:
 		// define构造的时候需要参数表和执行方法
-		PFunction(vector<string>& params, AST::pointer block);
-
-		// 执行函数的时候Call结点保存函数名和参数表，
-		// 执行的时候传参数，从调用函数的环境中获取引用，然后shared_from_this地
-		// 传过来，不用担心可变对象什么的，只要有名字就是可变对象，不可变对象
-		// 在ast分析赋值语句的时候就直接报错了
-		// 传过来以后就按照block记录的run就可以了，直接利用run函数即可，PFuntion
-		// 不需要内置run函数
+		PFunction(vector<string>& params, AST::pointer block, EPointer definition_env);
 
 		virtual string toString() const override;
 
-		virtual pointer __call__(const pointer& params, EPointer envir) override;
+		virtual NPointer __call__(const pointer& params, EPointer envir) override;
+
+		AST::pointer getBlock() const;
+
+		const vector<string>& getParams() const;
+
+		EPointer getDifinitionEnvir() const;
+
 	private:
 		vector<string> params;
-		AST::pointer block;
+		AST::pointer block; // 仅执行方法
+		EPointer definition_env;
 	};
 }
 

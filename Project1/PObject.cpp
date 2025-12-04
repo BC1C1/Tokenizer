@@ -180,7 +180,7 @@ namespace Py {
 		return nullptr;
 	}
 
-	pointer PObject::__call__(const pointer& params, shared_ptr<Environment> envir)
+	NPointer PObject::__call__(const pointer& params, shared_ptr<Environment>envir)
 	{
 		defaultNoCallFuncError();
 		return nullptr;

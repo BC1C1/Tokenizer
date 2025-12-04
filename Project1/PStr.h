@@ -7,7 +7,7 @@ namespace Py {
 	public:
 		PStr(const string& val);
 		virtual string toString() const override;
-		string getValue() const;
+		const string& getValue() const;
 		void setValue(const string& val);
 	public:
 		// 算术运算符声明

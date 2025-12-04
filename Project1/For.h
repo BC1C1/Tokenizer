@@ -2,6 +2,7 @@
 #include "TypeDefine.h"
 #include "NodeDefine.h"
 namespace AST {
+	using PPointer = Py::pointer;
 	class For : public ANode
 	{
 	public:
@@ -9,6 +10,7 @@ namespace AST {
 		pointer var;
 		pointer iterable;
 		pointer block;
+		PPointer iterator;
 	};
 }
 

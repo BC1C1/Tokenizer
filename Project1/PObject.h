@@ -4,6 +4,9 @@
 #include <map>
 #include <memory>
 #include <stdexcept>
+namespace AST {
+	class ANode;
+}
 
 namespace Py {
 	using std::enable_shared_from_this;
@@ -25,6 +28,7 @@ namespace Py {
 		bool operator==(PyType other);
 	};
 	class Environment;
+	using NPointer = shared_ptr<AST::ANode>;
 	class PObject : public enable_shared_from_this<PObject>
 	{
 	public:
@@ -73,7 +77,7 @@ namespace Py {
 		virtual pointer __getitem__(const pointer& index);
 
 		// 对象的调用办法
-		virtual pointer __call__(const pointer& params, shared_ptr<Environment> envir);
+		virtual NPointer __call__(const pointer& params, shared_ptr<Environment> envir);
 
 	protected:
 		// 错误处理函数声明

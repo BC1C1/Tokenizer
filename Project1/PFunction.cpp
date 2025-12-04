@@ -1,33 +1,39 @@
 #include "PFunction.h"
 namespace Py {
-	PFunction::PFunction(vector<string>& params, AST::pointer block)
-		: PObject(typeMap.at(Type::FunctionDefine)), params(params), block(block)
+	PFunction::PFunction(vector<string>& params, AST::pointer block, EPointer definition_env)
+		: PObject(typeMap.at(Type::FunctionDefine)), 
+		params(params), block(block),
+		definition_env(definition_env)
 	{
 	}
 	string PFunction::toString() const
 	{
 		return "Function";
 	}
-	pointer PFunction::__call__(const pointer& params, EPointer envir)
+	shared_ptr<AST::ANode> PFunction::__call__(const pointer& params, EPointer envir)
 	{
+		auto list = dynamic_pointer_cast<Py::PList>(params);
 		// 参数检查
-		auto param = dynamic_pointer_cast<Py::PList>(params);
-		if (!param)
-			throw std::runtime_error("错误的参数表，转换成PList时失败");
-		if (this->params.size() != param->size())
-			throw std::runtime_error("参数数量不匹配");
-		auto iterator = dynamic_pointer_cast<Py::ListIterator>(param->__iter__());
-		// 初始化block环境参数
-		auto b = dynamic_pointer_cast<AST::Block>(block);
-		// 环境用调用时候的环境
-		b->environment->setParent(envir);
-		for (auto& name : this->params) {
-			b->environment->createThere(name, iterator->get());
+		if (list->size() != this->params.size())
+			throw std::runtime_error("参数不匹配");
+		auto iter = dynamic_pointer_cast<Py::Iterator>(list->__iter__());
+		// 要闭包可以在这里把definitionEnvir的参数先createThere
+		if (!this->definition_env)
+			throw std::runtime_error("定义环境缺失");
+		auto& defineVars = this->definition_env->vars;
+		for (auto& iterator : defineVars) {
+			envir->createThere(iterator.first, iterator.second);
 		}
-		exe::Executor e(block);
-		auto result = e.run();
-		b->environment->clear();
-		return result;
+		// 在本环境中赋值
+		for (auto& name : this->params) {
+			envir->createThere(name, iter->get());
+		}
+		// 返回block
+		return this->block;
+	}
+	AST::pointer PFunction::getBlock() const
+	{
+		return block;
 	}
 }
 

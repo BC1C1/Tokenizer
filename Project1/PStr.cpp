@@ -7,7 +7,7 @@ namespace Py {
 	{
 		return value;
 	}
-	string PStr::getValue() const
+	const string& PStr::getValue() const
 	{
 		return value;
 	}

@@ -1,151 +1,306 @@
 #include "Executor.h"
 namespace exe {
 	using std::vector;
-	exe::Executor::Executor(NPointer& ast) : ast(ast)
+	exe::Executor::Executor(NPointer& ast)
 	{
+		this->ast = dynamic_pointer_cast<AST::Block>(ast);
+		if (!this->ast) throw std::runtime_error("无效的ast");
+		globalEnvir = make_shared<Py::Environment>();
 	}
-	void Executor::preScan(NPointer b)
+	void Executor::preScan()
 	{
-		auto block = dynamic_pointer_cast<AST::Block>(b);
-		auto& OutEnvir = block->environment; // shared_ptr复制了也没关系
-		for (auto& s : block->statements) {
+		// 1.注册内置函数（暂时没有）
+
+		// 2.函数定义提升
+		for (auto& s : ast->statements) {
 			if (s->getType() == AST::NodeType::FunctionDefine) {
 				auto function = dynamic_pointer_cast<AST::FunctionDefine>(s);
 				// 构造函数对象
-				auto obj = make_shared<Py::PFunction>(function->parmaNames, function->block);
-				OutEnvir->assign(function->name, obj);
-				// 对于def中嵌套的def也要处理
-				preScan(function->block);
+				auto obj = make_shared<Py::PFunction>(function->parmaNames, function->block, globalEnvir);
+				globalEnvir->assign(function->name, obj);
+			}
+		}
+
+		// 3.创建全局入口
+		// 全局代码块默认创建全局上下文
+		ExecutionContext context = {
+			this->ast,
+			globalEnvir,
+			0,
+			nullptr
+		};
+		// 压入栈中
+		contextStack.push(context);
+
+
+
+
+	}
+	void Executor::run()
+	{			
+		preScan();
+		while (!contextStack.empty()) {
+			auto& curr_ctx = contextStack.top();
+			bool is_finish = executeBlock(curr_ctx);
+			if (is_finish) {
+				contextStack.pop();
+				if (!contextStack.empty() && curr_ctx.returnValue) {
+					contextStack.top().returnValue = curr_ctx.returnValue;
+				}
 			}
 		}
 	}
-	PPointer Executor::run(EPointer envir, const NPointer& node)
+	void Executor::throwErrorMsg(const string& text)
 	{
-		auto currentNode = node ? node : ast;
-		// 参照print ast的方法
-		auto type = currentNode->getType();
+		std::cerr << "运行时错误: " << text << "\n";
+		exit(0);
+	}
+	bool Executor::executeBlock(ExecutionContext& ctx)
+	{
+		while (ctx.stmt_idx < ctx.currBlock->statements.size()) {
+			auto& stmt = ctx.currBlock->statements[ctx.stmt_idx];
+			ctx.stmt_idx++;
+			auto type = stmt->getType();
+			switch (type)
+			{
+			case AST::NodeType::Assignment: {
+				executeAssignment(stmt, ctx.currentEnvir);
+				break;
+			}
+			case AST::NodeType::Call: {
+				auto isContinue = executeCall(stmt, ctx.currentEnvir);
+				if (isContinue) break;
+				return false;
+			}
+			case AST::NodeType::Return: {
+				auto isContinue = executeReturn(stmt, ctx.currentEnvir);
+				return isContinue;
+			}
+			case AST::NodeType::If: {
+				auto isContinue = executeIf(stmt, ctx.currentEnvir);
+				if (isContinue) break;
+				return false;
+			}
+			case AST::NodeType::While: {
+				auto isContinue = executeWhile(stmt, ctx.currentEnvir);
+				if (isContinue) break;
+				ctx.stmt_idx--;
+				return false;
+			}
+			case AST::NodeType::For: {
+				auto isContinue = executeFor(stmt, ctx.currentEnvir);
+				if (isContinue) break;
+				ctx.stmt_idx--;
+				return false;
+			}
+			case AST::NodeType::Print: {
+				executePrint(stmt, ctx.currentEnvir);
+			}
+			case AST::NodeType::FunctionDefine: {
+				continue;
+			}
+			default:
+				break;
+			}
+		}
+		return true;
+	}
+	void Executor::executeAssignment(NPointer assignStmt, EPointer envir)
+	{
+		// 赋值本身不涉及新代码块，简单处理表达式返回即可
+		auto now = dynamic_pointer_cast<AST::Assignment>(assignStmt);
+		auto nameObj = dynamic_pointer_cast<AST::Variable>(now->name);
+		auto name = nameObj->name;
+		auto valueObj = executeExpr(now->value, envir);
+		envir->assign(name, valueObj);
+	}
+
+	bool Executor::executeCall(NPointer callStmt, EPointer envir)
+	{
+		auto now = dynamic_pointer_cast<AST::Call>(callStmt);
+		if (!now) throwErrorMsg("无效的call语句");
+		if (!now->caller) throwErrorMsg("无效的调用者");
+		// 获取函数对象
+		auto& name = dynamic_pointer_cast<AST::Variable>(now->caller)->name;
+		auto func = envir->getObj(name);
+		auto function = dynamic_pointer_cast<Py::PFunction>(func);
+		// 构造参数列表PList
+		std::vector<Py::pointer> params;
+		for (auto p : now->params) {
+			auto o = executeExpr(p, envir);
+			if (!o) throwErrorMsg("无效的参数");
+			params.push_back(o);
+		}
+		auto list = make_shared<Py::PList>(std::move(params));
+		// 构造函数内部环境
+		auto innerEnvir = make_shared<Py::Environment>(envir);
+		auto innerBlock = function->__call__(list, innerEnvir);
+		ExecutionContext context = {
+			dynamic_pointer_cast<AST::Block>(innerBlock),
+			innerEnvir,
+			0,
+			nullptr
+		};
+		contextStack.push(context);
+		return false;
+	}
+
+	bool Executor::executeReturn(NPointer returnStmt, EPointer envir)
+	{
+		PPointer returnValue;
+		auto now = dynamic_pointer_cast<AST::Return>(returnStmt);
+		if (!now) throwErrorMsg("无效的return语句");
+		if (!now->expression) throwErrorMsg("无效的返回值");
+		if (now->iscontain) {
+			returnValue = executeExpr(now->expression, envir);
+		}
+		else {
+			returnValue = make_shared<Py::PNone>();
+		}
+		contextStack.top().returnValue = returnValue;
+		contextStack.top().isReturn = true;
+		return true;
+	}
+
+	bool Executor::executeIf(NPointer ifStmt, EPointer envir)
+	{
+		auto now = dynamic_pointer_cast<AST::If>(ifStmt);
+		if (!now) throwErrorMsg("无效的if语句");
+		if (!now->block && now->elifs.empty() && !now->Else) throwErrorMsg("if 语句缺少有效代码块");
+		auto condition = dynamic_pointer_cast<Py::PBool>(executeExpr(now->condition, envir));
+		if (!condition) {
+			throwErrorMsg("if条件缺少条件");
+		}
+		if (condition->getValue()) {
+			// 要执行新的代码块，现在创建新环境并压入？
+			ExecutionContext newContext = {
+				dynamic_pointer_cast<AST::Block>(now->block),
+				envir, // 不创建新环境
+				0,
+				nullptr
+			};
+			contextStack.push(newContext);
+			return false;
+		}
+		auto elifs = now->elifs;
+		for (auto& elif : elifs) {
+			auto now = dynamic_pointer_cast<AST::If>(elif);
+			if (!now) throwErrorMsg("elif语句无效");
+			auto conditionObj = executeExpr(now->condition, envir);
+			if (!conditionObj) throwErrorMsg("elif的表达式无效");
+			auto condition = dynamic_pointer_cast<Py::PBool>(conditionObj);
+			if (!condition)
+				throwErrorMsg("无效的elif语句");
+			if (condition->getValue()) {
+				ExecutionContext context = {
+					dynamic_pointer_cast<AST::Block>(now->block),
+					envir,
+					0,
+					nullptr
+				};
+				contextStack.push(context);
+				return false;
+			}
+		}
+		if (now->Else) {
+			auto innerNow = dynamic_pointer_cast<AST::If>(now->Else);
+			auto condition = dynamic_pointer_cast<Py::PBool>(innerNow->condition);
+			ExecutionContext context = {
+				dynamic_pointer_cast<AST::Block>(innerNow->block),
+				envir,
+				0,
+				nullptr
+			};
+			contextStack.push(context);
+			return false;
+		}
+		return true; // 加入运行这句说明所有分支都没有命中，直接跳过算了
+	}
+
+	bool Executor::executeWhile(NPointer whileStmt, EPointer envir)
+	{
+		auto now = dynamic_pointer_cast<AST::While>(whileStmt);
+		if (!now) throwErrorMsg("无效的while语句");
+		if (!now->block) throwErrorMsg("while语句没有循环体");
+		auto conditionObj = executeExpr(now->condition, envir);
+		auto condition = dynamic_pointer_cast<Py::PBool>(conditionObj);
+		if (!condition) throwErrorMsg("while语句无效的表达式");
+		if (condition->getValue()) {
+			ExecutionContext context = {
+				dynamic_pointer_cast<AST::Block>(now->block),
+				envir,
+				0,
+				nullptr
+			};
+			contextStack.push(context);
+			return false;
+		}
+		return true;
+	}
+
+	bool Executor::executeFor(NPointer forStmt, EPointer envir)
+	{
+		auto now = dynamic_pointer_cast<AST::For>(forStmt);
+		if (!now) throwErrorMsg("无效的for语句");
+		if (!now->var) throwErrorMsg("for语句没有循环变量");
+		auto nameObj = dynamic_pointer_cast<AST::Variable>(now->var);
+		if (!nameObj) throwErrorMsg("for循环变量必须是合法变量名");
+		auto& name = nameObj->name;
+		if (!now->block) throwErrorMsg("for语句没有循环体");
+		if (!now->iterable) throwErrorMsg("for语句没有循环范围");
+		Py::pointer iterator = nullptr;
+		if (now->iterator)
+			iterator = now->iterator;
+		else {
+			iterator = executeExpr(now->iterable, envir)->__iter__();
+			now->iterator = iterator;
+		}
+		auto iter = dynamic_pointer_cast<Py::Iterator>(iterator);
+		if (!iter->isEnd()) {
+			auto obj = iter->get();
+			if (!obj) throwErrorMsg("迭代器获取元素失败");
+			envir->assign(name, obj);
+			ExecutionContext context = {
+				dynamic_pointer_cast<AST::Block>(now->block),
+				envir,
+				0,
+				nullptr
+			};
+			contextStack.push(context);
+			return false;
+		}
+		else {
+			now->iterator = nullptr;
+		    return true;
+		}
+	}
+
+	void Executor::executePrint(NPointer printStmt, EPointer envir)
+	{
+		auto now = dynamic_pointer_cast<AST::Print>(printStmt);
+		string buffer = "";
+		if (!now) throwErrorMsg("无效的print语句");
+		for (int i = 0; i < now->text.size(); i++) {
+			auto Obj = executeExpr(now->text[i], envir);
+			auto text = Obj->toString();
+			buffer += text;
+			if (i != now->text.size() - 1)
+				buffer += " ";
+		}
+		printf("%s\n", buffer.c_str());
+	}
+
+	PPointer Executor::executeExpr(NPointer expr, EPointer envir)
+	{
+		auto type = expr->getType();
 		switch (type)
 		{
-		case AST::NodeType::Block: {
-			// 按顺序执行所有语句
-			auto now = dynamic_pointer_cast<AST::Block>(currentNode);
-			// 先预扫描所有函数
-			preScan(now);
-			for (auto& statement : now->statements) {
-				auto result = run(now->environment, statement);
-				if (!result)
-					continue;
-				if (result->getType().type == Py::Type::ReturnValue)
-					return result;
-			}
-			break;
-		}
-		case AST::NodeType::Assignment: {
-			auto now = dynamic_pointer_cast<AST::Assignment>(currentNode);
-			// 首先解析now->name，确认是变量还是容器
-			if (auto var = dynamic_pointer_cast<AST::Variable>(now->name))
-			{
-				auto obj = run(envir, now->value);
-				envir->assign(var->name, obj);
-			} 
-			else if (auto var = dynamic_pointer_cast<AST::Index>(now->name))
-			{
-				auto obj = run(envir, now->value);
-				auto target = run(envir, var->obj);
-				auto index = run(envir, var->expression);
-				target->__setitem__(index, obj);
-			}
-			break;
-		}
-		case AST::NodeType::If: {
-			auto now = dynamic_pointer_cast<AST::If>(currentNode);
-			auto condition = run(envir, now->condition);
-			auto result = dynamic_pointer_cast<Py::PBool>(condition);
-			if (!result) {
-				throwErrorMsg("表达式必须是布尔值");
-			}
-			if (result->getValue()) {
-				auto block = dynamic_pointer_cast<AST::Block>(now->block);
-				if (block)
-					run(block->environment, block);
-				else {
-					throwErrorMsg("if 语句缺少有效代码块");
-				}
-			}
-			else {
-				// 开始运行elif
-				bool flag = false;
-				for (auto& elif : now->elifs) {
-					run(envir, elif);
-					auto isExecuted = dynamic_pointer_cast<AST::If>(elif)->isExecuted;
-					flag = isExecuted;
-					if (flag)
-						break;
-				}
-				if (now->Else && !flag)
-					run(envir, now->Else);
-			}
-			// 本次if执行结束，开始清空elif里那些执行标志符
-			for (auto& elif : now->elifs) {
-				dynamic_pointer_cast<AST::If>(elif)->isExecuted = false;
-			}
-			break;
-		}
-		case AST::NodeType::Elif: {
-			auto now = dynamic_pointer_cast<AST::If>(currentNode);
-			auto condition = run(envir, now->condition);
-			auto result = dynamic_pointer_cast<Py::PBool>(condition);
-			if (!result)
-				throwErrorMsg("表达式必须是布尔值");
-			if (result->getValue()) {
-				now->isExecuted = true;
-				auto block = dynamic_pointer_cast<AST::Block>(now->block);
-				run(block->environment, block);
-			}
-			break;
-		}
-		case AST::NodeType::Else: {
-			auto now = dynamic_pointer_cast<AST::If>(currentNode);
-			auto block = dynamic_pointer_cast<AST::Block>(now->block);
-			run(block->environment, block);
-			break;
-		}
-		case AST::NodeType::While: {
-			auto now = dynamic_pointer_cast<AST::While>(currentNode);
-			auto condition = run(envir, now->condition);
-			auto result = dynamic_pointer_cast<Py::PBool>(condition);
-			if (!result)
-				throwErrorMsg("表达式必须是布尔值");
-			while (result->getValue()) {
-				auto block = dynamic_pointer_cast<AST::Block>(now->block);
-				run(block->environment, block);
-				condition = run(envir, now->condition);
-				result = dynamic_pointer_cast<Py::PBool>(condition);
-			}
-			break;
-		}
-		case AST::NodeType::For: {
-			auto now = dynamic_pointer_cast<AST::For>(currentNode);
-			auto block = dynamic_pointer_cast<AST::Block>(now->block);
-			auto innerEnvir = block->environment;
-			auto var = dynamic_pointer_cast<AST::Variable>(now->var);
-			auto iterable = run(envir, now->iterable);
-			auto iter = iterable->__iter__();
-			auto iterator = dynamic_pointer_cast<Py::Iterator>(iter);
-			while (!iterator->isEnd()) {
-				// 给var赋值
-				auto obj = iterator->get();
-				innerEnvir->createThere(var->name, obj);
-				run(innerEnvir, block);
-			}
-
-			break;
-		}
 		case AST::NodeType::Binary: {
-			auto now = dynamic_pointer_cast<AST::Binary>(currentNode);
-			auto left = run(envir, now->left);
-			auto right = run(envir, now->right);
-			switch (now->op)
+			auto now = dynamic_pointer_cast<AST::Binary>(expr);
+			auto op = now->op;
+			auto left = executeExpr(now->left, envir);
+			auto right = executeExpr(now->right, envir);
+			switch (op)
 			{
 			case Lexer::TokenType::PLUS: return left->__add__(right);
 			case Lexer::TokenType::MINUS: return left->__sub__(right);
@@ -162,140 +317,97 @@ namespace exe {
 			case Lexer::TokenType::OR: return left->__or__(right);
 			case Lexer::TokenType::NOT: return left->__not__(right);
 			case Lexer::TokenType::IN: {
-				auto iter = right->__iter__();
-				auto iterator = dynamic_pointer_cast<Py::Iterator>(iter);
-				while (!iterator->isEnd()) {
-					auto result = left->__eq__(iterator->get());
-					auto temp = dynamic_pointer_cast<Py::PBool>(result);
-					if (!temp)
-						return make_shared<Py::PBool>(false);
-					if (temp->getValue())
-					{
-						return make_shared<Py::PBool>(true);
-					}
-				}
-				return make_shared<Py::PBool>(false);
+
+				break;
 			}
-			default:
-				// 这里暂时这样，其实需要try这个内层swich然后catch错误继续转交
-				// 错误文本，这里也一样，是“未知的运算符”
-				throwErrorMsg("未知的运算符");
+			default: {
+				throwErrorMsg("未知的二元运算符");
+				break;
 			}
-			break;
+			}
 		}
 		case AST::NodeType::Unary: {
-			auto now = dynamic_pointer_cast<AST::Unary>(currentNode);
-			auto type = now->op;
-			auto right = run(envir, now->right);
-			switch (type)
+			auto now = dynamic_pointer_cast<AST::Unary>(expr);
+			auto op = now->op;
+			auto obj = executeExpr(now->right, envir);
+			switch (op)
 			{
-			case Lexer::TokenType::MINUS: 
-				return right->__sub__(make_shared<Py::PNone>());
-			case Lexer::TokenType::NOT:
-				return right->__not__(make_shared<Py::PNone>());
-			default:
-				throwErrorMsg("未知的运算符");
+			case Lexer::TokenType::MINUS: {
+				return obj->__sub__(make_shared<Py::PNone>());
+				break;
+			}
+			case Lexer::TokenType::NOT: {
+				return obj->__not__(make_shared<Py::PNone>());
+				break;
+			}
+			default: {
+				throwErrorMsg("未知的一元运算符");
+				break;
+			}
 			}
 		}
 		case AST::NodeType::Variable: {
-			auto now = dynamic_pointer_cast<AST::Variable>(currentNode);
+			auto now = dynamic_pointer_cast<AST::Variable>(expr);
 			return envir->getObj(now->name);
 			break;
 		}
-		case AST::NodeType::Call: {
-			auto now = dynamic_pointer_cast<AST::Call>(currentNode);
-			auto caller = run(envir, now->caller);
-			vector<Py::pointer> params;
-			for (auto& p : now->params) {
-				params.push_back(run(envir, p));
-			}
-			return caller->__call__(make_shared<Py::PList>(std::move(params)), envir);
-			break;
-		}
 		case AST::NodeType::Int: {
-			auto now = dynamic_pointer_cast<AST::Int>(currentNode);
+			auto now = dynamic_pointer_cast<AST::Int>(expr);
 			return make_shared<Py::PInt>(now->value);
 			break;
 		}
 		case AST::NodeType::Float: {
-			auto now = dynamic_pointer_cast<AST::Float>(currentNode);
+			auto now = dynamic_pointer_cast<AST::Float>(expr);
 			return make_shared<Py::PFloat>(now->value);
 			break;
 		}
 		case AST::NodeType::String: {
-			auto now = dynamic_pointer_cast<AST::String>(currentNode);
+			auto now = dynamic_pointer_cast<AST::String>(expr);
 			return make_shared<Py::PStr>(now->text);
 			break;
 		}
-		case AST::NodeType::Bool: {
-			auto now = dynamic_pointer_cast<AST::Bool>(currentNode);
-			return make_shared<Py::PBool>(now->value);
-			break;
-		}
-		case AST::NodeType::Print: {
-			auto now = dynamic_pointer_cast<AST::Print>(currentNode);
-			string text = "";
-			for (size_t i = 0; i < now->text.size(); ++i) {
-				text += run(envir, now->text[i])->toString();
-				if (i != now->text.size() - 1) {
-					text += " ";
+		case AST::NodeType::List: {
+			auto now = dynamic_pointer_cast<AST::List>(expr);
+			std::vector<Py::pointer> eles;
+			for (auto e : now->elements) {
+				auto temp = executeExpr(e, envir);
+				if (!temp) {
+					throwErrorMsg("无效的元素");
 				}
+				eles.push_back(temp);
 			}
-			puts(text.c_str());
+			return make_shared<Py::PList>(std::move(eles));
 			break;
 		}
 		case AST::NodeType::Index: {
-			auto now = dynamic_pointer_cast<AST::Index>(currentNode);
-			auto obj = run(envir, now->obj);
-			auto index = run(envir, now->expression);
-			auto IntObj = index->asInt();
-			int value = dynamic_pointer_cast<Py::PInt>(IntObj)->getValue();
+			auto now = dynamic_pointer_cast<AST::Index>(expr);
+			auto obj = executeExpr(now->obj, envir);
+			auto index = executeExpr(now->expression, envir);
+			auto indexNum = dynamic_pointer_cast<Py::PInt>(index->asInt())->getValue();
 			auto iter = obj->__iter__();
 			auto iterator = dynamic_pointer_cast<Py::Iterator>(iter);
-			if (!iterator) {
-				throwErrorMsg("不可迭代对象不可索引");
-			}
-			return iterator->get(value);
+			return iterator->get(indexNum);
 			break;
 		}
-		case AST::NodeType::List: {
-			auto now = dynamic_pointer_cast<AST::List>(currentNode);
-			vector<Py::pointer> iterable;
-			for (auto& ele : now->elements) {
-				auto e = run(envir, ele);
-				if (e)
-					iterable.push_back(e);
-				else
-					throwErrorMsg("无效的元素");
-			}
-			return make_shared<Py::PList>(std::move(iterable));
-		}
-		case AST::NodeType::FunctionDefine: {
-			// 跳过，什么也不做
-			// 主要是预扫描构造的时候对于函数的参数名表是用移动构造
+		case AST::NodeType::Bool: {
+			auto now = dynamic_pointer_cast<AST::Bool>(expr);
+			return make_shared<Py::PBool>(now->value);
 			break;
 		}
-		case AST::NodeType::Return: {
-			auto now = dynamic_pointer_cast<AST::Return>(currentNode);
-			if (now->iscontain) {
-				auto obj = run(envir, now->expression);
-				return make_shared<Py::PReturnValue>(obj);
-			}
-			else {
-				auto none = make_shared<Py::PNone>();
-				return make_shared<Py::PReturnValue>(none);
-			}
-
+		case AST::NodeType::Call: {
+			executeCall(expr, envir);
+			auto ret = contextStack.top().returnValue;
+			contextStack.top().returnValue = nullptr;
+			return ret;
+			break;
 		}
-		default:
-			throwErrorMsg("未知的结点类型");
+		default: {
+			throwErrorMsg("未知的表达式节点类型");
+			break;
+		}
 		}
 		return nullptr;
 	}
-	void Executor::throwErrorMsg(const string& text)
-	{
-		std::cerr << "运行时错误: " << text << "\n";
-		exit(0);
-	}
+
 }
 
