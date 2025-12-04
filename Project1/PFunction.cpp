@@ -3,6 +3,8 @@ namespace Py {
 	PFunction::PFunction(vector<string>& params, AST::pointer block)
 		: PObject(typeMap.at(Type::FunctionDefine)), params(params), block(block)
 	{
+		auto B = dynamic_pointer_cast<AST::Block>(block);
+		B->environment = make_shared<Py::Environment>();
 	}
 	string PFunction::toString() const
 	{

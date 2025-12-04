@@ -7,13 +7,10 @@ using std::string;
 
 int main() {
     string code1 = R"(
-def add(param1, param2):
-    return param1 + param2
 a = 1
-b = 2
-d = 123
-c = add(a, b)
-print(c)
+print(a)
+a = a + 1
+print(a)
 )";
     string code = R"(
 # 修正版：无列表操作的学生成绩管理系统
@@ -46,6 +43,7 @@ while current_step < 5:
 
     # 统计数据更新
     student_count = student_count + 1
+    print(student_count)
     total_score = total_score + score
     
     # 最高分/最低分更新
@@ -63,6 +61,7 @@ while current_step < 5:
     current_step = current_step + 1
 
 # 计算平均分
+print(student_count)
 average = total_score / student_count
 
 # 输出基础统计结果
@@ -143,7 +142,7 @@ print("=== 测试完成 ===")
     try {
         // 分词
         Tokenizer tokenizer;
-        auto tokens = tokenizer.scanTokens(code1);
+        auto tokens = tokenizer.scanTokens(code);
         printf("<---------- tokens ---------->\n");
         for (auto token : tokens) {
             std::cout << token << "\n";

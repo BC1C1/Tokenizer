@@ -248,7 +248,7 @@ namespace Py {
 			if (!intOther) {
 				throw runtime_error("尝试转换为Int时失败");
 			}
-			bool val = value > intOther->getValue();
+			bool val = value < intOther->getValue();
 			return make_shared<PBool>(val);
 		}
 		case Type::Float: {
@@ -256,12 +256,12 @@ namespace Py {
 			if (!floatOther) {
 				throw runtime_error("尝试转换为Float时失败");
 			}
-			bool val = value > floatOther->getValue();
+			bool val = value < floatOther->getValue();
 			return make_shared<PBool>(val);
 		}
 		case Type::Undefined:
 		default:
-			defaultOpError(">", other);
+			defaultOpError("<", other);
 			return nullptr; // 无效语句用于消除警告
 		}
 	}
