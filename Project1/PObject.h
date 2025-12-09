@@ -15,7 +15,7 @@ namespace Py {
 	using std::runtime_error;
 	enum class Type {
 		Int, Float, Str, Bool, None, Undefined, Iterator, List, FunctionDefine,
-		ReturnValue
+		ReturnValue, Class, Instance
 	};
 	std::string TypeToString(Type type);
 	struct PyType {
@@ -75,6 +75,9 @@ namespace Py {
 		// 对象的调用办法
 		virtual pointer __call__(const pointer& params, shared_ptr<Environment> envir);
 
+		// 对象实例化、属性访问和存储
+		virtual pointer __instance__(const pointer& params);
+
 	protected:
 		// 错误处理函数声明
 		pointer defaultOpError(const std::string& op, const pointer& other) const;
@@ -101,6 +104,8 @@ namespace Py {
 		{Type::List, PyType{Type::List}},
 		{Type::FunctionDefine, PyType{Type::FunctionDefine}},
 		{Type::ReturnValue, PyType{Type::ReturnValue}},
+		{Type::Class, PyType{Type::Class}},
+		{Type::Instance, PyType{Type::Instance}}
 	};
 	class PInt;
 	class PFloat;
@@ -111,6 +116,8 @@ namespace Py {
 	class PList;
 	class PFunction;
 	class PReturnValue;
+	class PClass;
+	class PInstance;
 
 	class Environment {
 		using EPointer = std::shared_ptr<Environment>;

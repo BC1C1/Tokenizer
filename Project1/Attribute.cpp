@@ -1,6 +1,7 @@
 #include "Attribute.h"
-
-AST::Attribute::Attribute(pointer caller, pointer attribute)
-	: ANode(NodeType::Attribute), caller(caller), attribute(attribute)
-{
+namespace AST {
+	Attribute::Attribute(pointer caller, const string& attribute)
+		: ANode(NodeType::Attribute), caller(caller), attribute(attribute)
+	{
+	}
 }

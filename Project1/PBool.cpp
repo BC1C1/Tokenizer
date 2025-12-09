@@ -52,6 +52,7 @@ namespace Py {
 		default:
 			defaultOpError("==", other);
 		}
+		return nullptr;
 	}
 	pointer PBool::__ne__(const pointer& other) const
 	{
@@ -70,6 +71,7 @@ namespace Py {
 		default:
 			defaultOpError("!=", other);
 		}
+		return nullptr;
 	}
 	pointer PBool::__lt__(const pointer& other) const
 	{
@@ -88,6 +90,7 @@ namespace Py {
 		default:
 			defaultOpError("<", other);
 		}
+		return nullptr;
 	}
 	pointer PBool::__le__(const pointer& other) const
 	{
@@ -106,6 +109,7 @@ namespace Py {
 		default:
 			defaultOpError("<=", other);
 		}
+		return nullptr;
 	}
 	pointer PBool::__gt__(const pointer& other) const
 	{
@@ -124,6 +128,7 @@ namespace Py {
 		default:
 			defaultOpError(">", other);
 		}
+		return nullptr;
 	}
 	pointer PBool::__ge__(const pointer& other) const
 	{
@@ -142,6 +147,7 @@ namespace Py {
 		default:
 			defaultOpError(">=", other);
 		}
+		return nullptr;
 	}
 	pointer PBool::__and__(const pointer& other) const
 	{
@@ -160,6 +166,7 @@ namespace Py {
 		default:
 			defaultOpError("and", other);
 		}
+		return nullptr;
 	}
 	pointer PBool::__or__(const pointer& other) const
 	{
@@ -178,6 +185,7 @@ namespace Py {
 		default:
 			defaultOpError("or", other);
 		}
+		return nullptr;
 	}
 	pointer PBool::__not__(const pointer& other) const
 	{
@@ -191,5 +199,6 @@ namespace Py {
 		default:
 			defaultOpError("!=", other);
 		}
+		return nullptr;
 	}
 }

@@ -7,9 +7,7 @@ using std::string;
 
 int main() {
     string code1 = R"(
-a = 1 * 8 + 9
-print(2 * a)
-print(a)
+obj.instances()[0].add()
 )";
     string code = R"(
 # 修正版：无列表操作的学生成绩管理系统

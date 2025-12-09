@@ -146,8 +146,10 @@
     <ClInclude Include="NodeDefine.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="PBool.h" />
+    <ClInclude Include="PClass.h" />
     <ClInclude Include="PFloat.h" />
     <ClInclude Include="PFunction.h" />
+    <ClInclude Include="PInstance.h" />
     <ClInclude Include="PInt.h" />
     <ClInclude Include="PList.h" />
     <ClInclude Include="PNone.h" />
@@ -183,8 +185,10 @@
     <ClCompile Include="NodeDefine.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="PBool.cpp" />
+    <ClCompile Include="PClass.cpp" />
     <ClCompile Include="PFloat.cpp" />
     <ClCompile Include="PFunction.cpp" />
+    <ClCompile Include="PInstance.cpp" />
     <ClCompile Include="PInt.cpp" />
     <ClCompile Include="PList.cpp" />
     <ClCompile Include="PNone.cpp" />

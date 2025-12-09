@@ -186,6 +186,12 @@ namespace Py {
 		return nullptr;
 	}
 
+	pointer PObject::__instance__(const pointer& params)
+	{
+		throw std::runtime_error("__instance__未实现");
+		return nullptr;
+	}
+
 	Environment::Environment(EPointer parent) : parent(parent)
 	{
 	}

@@ -120,6 +120,12 @@
     <ClInclude Include="Attribute.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="PClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PInstance.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
@@ -225,6 +231,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Attribute.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PInstance.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

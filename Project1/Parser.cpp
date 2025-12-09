@@ -270,8 +270,8 @@ namespace AST {
 				break;
 			}
 			case Lexer::TokenType::DOT: {
-				auto attributeName = parsePrimary();
-				ret = make_shared<AST::Attribute>(ret, attributeName);
+				auto& attribute = comsume(TokenType::IDENTIFIER, "无效的属性");
+				ret = make_shared<AST::Attribute>(ret, attribute.lexeme);
 				break;
 			}
 			}

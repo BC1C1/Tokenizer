@@ -5,9 +5,9 @@ namespace AST {
 	class Attribute : public ANode
 	{
 	public:
-		Attribute(pointer caller, pointer attribute);
+		Attribute(pointer caller, const string& attribute);
 		pointer caller;
-		pointer attribute;
+		string attribute;
 	};
 }
 

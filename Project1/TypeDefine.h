@@ -41,3 +41,5 @@
 #include "PReturnValue.h"
 
 #include "Attribute.h"
+
+#include "PClass.h"
