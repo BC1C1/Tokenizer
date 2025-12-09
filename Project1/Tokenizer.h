@@ -27,7 +27,7 @@ namespace Lexer
         // 缩进
         INDENT, DEDENT,
         // 分隔符（逗号）
-        COMMA,
+        COMMA, DOT,
         // 结束符
         EOF_TOKEN,
         // 错误标识符

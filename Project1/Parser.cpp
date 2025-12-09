@@ -241,12 +241,11 @@ namespace AST {
 			break;
 		}
 
-		while (check(TokenType::LBRACKET) || check(TokenType::LPAREN)) {
+		while (check(TokenType::LBRACKET) || check(TokenType::LPAREN) || check(TokenType::DOT)) {
 			auto type = tokens[current].type;
 			current++;
 			switch (type)
 			{
-
 			case Lexer::TokenType::LPAREN: {
 				vector<pointer> expressions;
 				while (!check(TokenType::RPAREN)) {
@@ -268,6 +267,11 @@ namespace AST {
 				auto indexExpr = parseExpression();
 				comsume(TokenType::RBRACKET, "索引缺少右分隔符 ']'");
 				ret = make_shared<AST::Index>(ret, indexExpr);
+				break;
+			}
+			case Lexer::TokenType::DOT: {
+				auto attributeName = parsePrimary();
+				ret = make_shared<AST::Attribute>(ret, attributeName);
 				break;
 			}
 			}

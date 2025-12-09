@@ -7,9 +7,8 @@ using std::string;
 
 int main() {
     string code1 = R"(
-a = 1
-print(a)
-a = a + 1
+a = 1 * 8 + 9
+print(2 * a)
 print(a)
 )";
     string code = R"(
@@ -142,7 +141,7 @@ print("=== 测试完成 ===")
     try {
         // 分词
         Tokenizer tokenizer;
-        auto tokens = tokenizer.scanTokens(code);
+        auto tokens = tokenizer.scanTokens(code1);
         printf("<---------- tokens ---------->\n");
         for (auto token : tokens) {
             std::cout << token << "\n";

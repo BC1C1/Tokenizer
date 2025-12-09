@@ -253,6 +253,10 @@ std::vector<Lexer::Token> Lexer::Tokenizer::scanPartToken(const std::string& lin
             tokens.emplace_back(TokenType::COLON, ":", lineNum);
             current++;
         }
+        else if (c == '.') {
+            tokens.emplace_back(TokenType::DOT, ".", lineNum);
+            current++;
+        }
         // 未知字符
         else {
             tokens.emplace_back(TokenType::ERROR, "Unexpected character: " + std::string(1, c), lineNum);
