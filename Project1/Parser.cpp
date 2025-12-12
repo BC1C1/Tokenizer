@@ -21,7 +21,7 @@ namespace AST {
 
 	pointer Parser::parseBlock(bool isCreateNewEnvironment)
 	{
-		comsume(TokenType::INDENT, "意外的缩进");
+		consume(TokenType::INDENT, "意外的缩进");
 		vector<pointer> statements;
 		if (isCreateNewEnvironment) {
 			auto preEnvir = currentEnvironment;
@@ -30,7 +30,7 @@ namespace AST {
 			while (!isAtEnd() && !check(TokenType::DEDENT)) {
 				statements.push_back(parseStatement());
 			}
-			comsume(TokenType::DEDENT, "意外的缩进");
+			consume(TokenType::DEDENT, "意外的缩进");
 
 			shared_ptr<Block> block = make_shared<Block>(statements, childEnvir);
 			currentEnvironment = preEnvir;
@@ -40,7 +40,7 @@ namespace AST {
 			while (!isAtEnd() && !check(TokenType::DEDENT)) {
 				statements.push_back(parseStatement());
 			}
-			comsume(TokenType::DEDENT, "意外的缩进");
+			consume(TokenType::DEDENT, "意外的缩进");
 			shared_ptr<Block> block = make_shared<Block>(statements, currentEnvironment);
 			return block;
 		}
@@ -62,8 +62,21 @@ namespace AST {
 		if (functionStmt) return functionStmt;
 		auto returnStmt = parseReturn();
 		if (returnStmt) return returnStmt;
+		auto classDefine = parseClass();
+		if (classDefine) return classDefine;
 
 		return parseExpression();
+	}
+
+	pointer Parser::parseClass()
+	{
+		if (!match(TokenType::CLASS)) return nullptr;
+		// 下面解析名字
+		auto nameToken = consume(TokenType::IDENTIFIER, "类缺少名称");
+		auto& name = nameToken.lexeme;
+		consume(TokenType::COLON, "类定义缺少冒号");
+		auto inner = parseBlock();
+		return make_shared<Class>(name, inner);
 	}
 
 	pointer Parser::parseExpression()
@@ -204,9 +217,9 @@ namespace AST {
 		}
 		case Lexer::TokenType::LPAREN: {
 			// 开始匹配
-			comsume(TokenType::LPAREN, "缺失的左括号");
+			consume(TokenType::LPAREN, "缺失的左括号");
 			auto inner = parseExpression();
-			comsume(TokenType::RPAREN, "缺失的右括号");
+			consume(TokenType::RPAREN, "缺失的右括号");
 			ret = inner;
 			break;
 			// return之前就consume了右括号了，这个语句只匹配了一层括号
@@ -259,18 +272,18 @@ namespace AST {
 						throwErrorMsg("元素之间缺少逗号");
 					}
 				}
-				comsume(TokenType::RPAREN, "缺少右括号");
+				consume(TokenType::RPAREN, "缺少右括号");
 				ret = make_shared<AST::Call>(ret, std::move(expressions));
 				break;
 			}
 			case Lexer::TokenType::LBRACKET: {
 				auto indexExpr = parseExpression();
-				comsume(TokenType::RBRACKET, "索引缺少右分隔符 ']'");
+				consume(TokenType::RBRACKET, "索引缺少右分隔符 ']'");
 				ret = make_shared<AST::Index>(ret, indexExpr);
 				break;
 			}
 			case Lexer::TokenType::DOT: {
-				auto& attribute = comsume(TokenType::IDENTIFIER, "无效的属性");
+				auto& attribute = consume(TokenType::IDENTIFIER, "无效的属性");
 				ret = make_shared<AST::Attribute>(ret, attribute.lexeme);
 				break;
 			}
@@ -282,7 +295,7 @@ namespace AST {
 
 	pointer Parser::parseList()
 	{
-		comsume(TokenType::LBRACKET, "缺失的左中括号");
+		consume(TokenType::LBRACKET, "缺失的左中括号");
 		vector<pointer> expressions;
 		while (!check(TokenType::RBRACKET)) {
 			auto ele = parseExpression();
@@ -295,7 +308,7 @@ namespace AST {
 				throwErrorMsg("元素之间缺少逗号");
 			}
 		}
-		comsume(TokenType::RBRACKET, "缺失的右中括号");
+		consume(TokenType::RBRACKET, "缺失的右中括号");
 		return make_shared<List>(std::move(expressions));
 	}
 
@@ -322,7 +335,7 @@ namespace AST {
 			return nullptr;
 		}
 		string name = tokens[current - 1].lexeme;
-		comsume(TokenType::LPAREN, "函数列表缺少左括号");
+		consume(TokenType::LPAREN, "函数列表缺少左括号");
 		vector<pointer> vars;
 		while (!check(TokenType::RPAREN)) {
 			auto ele = parsePrimary();
@@ -341,8 +354,8 @@ namespace AST {
 		for (auto& v : vars) {
 			params.push_back(dynamic_pointer_cast<Variable>(v)->name);
 		}
-		comsume(TokenType::RPAREN, "函数列表缺少右括号");
-		comsume(TokenType::COLON, "函数定义缺少冒号");
+		consume(TokenType::RPAREN, "函数列表缺少右括号");
+		consume(TokenType::COLON, "函数定义缺少冒号");
 		auto block = parseBlock(true);
 		return make_shared<FunctionDefine>(name, std::move(params), block);
 	}
@@ -351,14 +364,14 @@ namespace AST {
 	{
 		// 确认是不是print语句
 		if (!match(TokenType::PRINT)) return nullptr;
-		comsume(TokenType::LPAREN, "缺失的左括号");
+		consume(TokenType::LPAREN, "缺失的左括号");
 		vector<pointer> text;
 		do {
 			if (match(TokenType::RPAREN))
 				throwErrorMsg("print缺少参数");
 			text.push_back(parseExpression());
 		} while (match(TokenType::COMMA));
-		comsume(TokenType::RPAREN, "缺失的右括号");
+		consume(TokenType::RPAREN, "缺失的右括号");
 		return make_shared<Print>(text);
 	}
 
@@ -402,7 +415,7 @@ namespace AST {
 	{
 		if (!match(TokenType::IF)) return nullptr;
 		auto condition = parseExpression();
-		comsume(TokenType::COLON, "if 语句缺少冒号");
+		consume(TokenType::COLON, "if 语句缺少冒号");
 		auto block = parseBlock();
 		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
 			throwErrorMsg("if 不可为空");
@@ -420,7 +433,7 @@ namespace AST {
 	{
 		if (!match(TokenType::ELIF)) return nullptr;
 		auto condition = parseExpression();
-		comsume(TokenType::COLON, "elif 语句缺少冒号");
+		consume(TokenType::COLON, "elif 语句缺少冒号");
 		auto block = parseBlock();
 		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
 			throwErrorMsg("elif 不可为空");
@@ -430,7 +443,7 @@ namespace AST {
 	pointer Parser::parseElseStmt()
 	{
 		if (!match(TokenType::ELSE)) return nullptr;
-		comsume(TokenType::COLON, "else 语句缺少冒号");
+		consume(TokenType::COLON, "else 语句缺少冒号");
 		auto block = parseBlock();
 		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
 			throwErrorMsg("else 不可为空");
@@ -441,7 +454,7 @@ namespace AST {
 	{
 		if (!match(TokenType::WHILE)) return nullptr;
 		auto condition = parseExpression();
-		comsume(TokenType::COLON, "while 语句缺少冒号");
+		consume(TokenType::COLON, "while 语句缺少冒号");
 		auto block = parseBlock(false);
 		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
 			throwErrorMsg("循环体不可为空");
@@ -456,9 +469,9 @@ namespace AST {
 			throwErrorMsg("无效的变量");
 		if (var->getType() != NodeType::Variable)
 			throwErrorMsg("for 语句只接受标识符作为循环变量");
-		comsume(TokenType::IN, "for 语句缺少in");
+		consume(TokenType::IN, "for 语句缺少in");
 		auto iterable = parseExpression();
-		comsume(TokenType::COLON, "for 语句缺少冒号");
+		consume(TokenType::COLON, "for 语句缺少冒号");
 		auto block = parseBlock(false);
 		if (dynamic_pointer_cast<Block>(block)->statements.size() == 0)
 			throwErrorMsg("循环体不可为空");
@@ -482,7 +495,7 @@ namespace AST {
 		return Token(TokenType::ERROR, "out_of_range", -1);
 	}
 
-	const Token& Parser::comsume(TokenType type, const string& errorMsg)
+	const Token& Parser::consume(TokenType type, const string& errorMsg)
 	{
 		if (!match(type)) {
 			throwErrorMsg(errorMsg);

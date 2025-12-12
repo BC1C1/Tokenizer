@@ -36,6 +36,10 @@ namespace Py {
 		}
 		return result + " ]";
 	}
+	vector<pointer>& PList::content()
+	{
+		return iterable;
+	}
 	pointer PList::__eq__(const pointer& other) const
 	{
 		auto otherList = dynamic_pointer_cast<PList>(other);

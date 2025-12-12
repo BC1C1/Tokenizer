@@ -43,3 +43,6 @@
 #include "Attribute.h"
 
 #include "PClass.h"
+#include "PInstance.h"
+
+#include "Class.h"

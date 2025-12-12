@@ -186,10 +186,22 @@ namespace Py {
 		return nullptr;
 	}
 
-	pointer PObject::__instance__(const pointer& params)
+	pointer PObject::__instance__(const pointer& params, shared_ptr<Environment> envir)
 	{
 		throw std::runtime_error("__instance__未实现");
 		return nullptr;
+	}
+
+	pointer PObject::__getattribute__(const string& attributeName)
+	{
+		throw std::runtime_error("__getattribute__未实现");
+		return nullptr;
+	}
+
+	void PObject::__setattribute__(const string& attributeName, const pointer& obj)
+	{
+		throw std::runtime_error("__setattribute__未实现");
+		return;
 	}
 
 	Environment::Environment(EPointer parent) : parent(parent)

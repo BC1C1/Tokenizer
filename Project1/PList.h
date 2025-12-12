@@ -18,6 +18,8 @@ namespace Py {
 
 		virtual string toString() const override;
 
+		vector<pointer>& content();
+
 	public:
 		virtual pointer __eq__(const pointer& other) const override;
 

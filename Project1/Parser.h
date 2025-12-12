@@ -21,6 +21,9 @@ namespace AST {
 		pointer parseStatement();
 
 
+		pointer parseClass();
+
+
 		pointer parseReturn();
 
 		pointer parseFunction();
@@ -65,7 +68,7 @@ namespace AST {
 
 		const Token& peekNext();
 
-		const Token& comsume(TokenType type, const string& errorMsg);
+		const Token& consume(TokenType type, const string& errorMsg);
 
 		bool check(TokenType type);
 

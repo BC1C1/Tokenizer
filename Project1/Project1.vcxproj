@@ -133,6 +133,7 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="Bool.h" />
     <ClInclude Include="Call.h" />
+    <ClInclude Include="Class.h" />
     <ClInclude Include="Executor.h" />
     <ClInclude Include="Float.h" />
     <ClInclude Include="For.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Bool.cpp" />
     <ClCompile Include="Call.cpp" />
+    <ClCompile Include="Class.cpp" />
     <ClCompile Include="Executor.cpp" />
     <ClCompile Include="Float.cpp" />
     <ClCompile Include="For.cpp" />

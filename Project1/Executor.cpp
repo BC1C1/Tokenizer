@@ -6,8 +6,9 @@ namespace exe {
 	}
 	void Executor::preScan(NPointer b)
 	{
+		preScanClass(b);
 		auto block = dynamic_pointer_cast<AST::Block>(b);
-		auto& OutEnvir = block->environment; // shared_ptr复制了也没关系
+		auto OutEnvir = block->environment; // shared_ptr复制了也没关系
 		for (auto& s : block->statements) {
 			if (s->getType() == AST::NodeType::FunctionDefine) {
 				auto function = dynamic_pointer_cast<AST::FunctionDefine>(s);
@@ -15,6 +16,42 @@ namespace exe {
 				auto obj = make_shared<Py::PFunction>(function->parmaNames, function->block);
 				OutEnvir->assign(function->name, obj);
 				// 对于def中嵌套的def也要处理
+				preScan(function->block);
+				// 提升函数内的类
+				preScanClass(function->block);
+			}
+		}
+	}
+	void Executor::preScanClass(NPointer b)
+	{
+		auto block = dynamic_pointer_cast<AST::Block>(b);
+		auto OutEnvir = block->environment;
+		for (auto& s : block->statements) {
+			if (s->getType() == AST::NodeType::Class) {
+				auto Class = dynamic_pointer_cast<AST::Class>(s);
+				auto obj = make_shared<Py::PClass>(Class->name);
+				OutEnvir->assign(Class->name, obj);
+				// 这里需要根据block中的def来为obj初始化成员表
+				preScanFunctionInClass(obj, Class->block);
+				// 提升嵌套类
+				preScanClass(Class->block);
+			}
+		}
+
+	}
+	void Executor::preScanFunctionInClass(PPointer c, NPointer b)
+	{
+		// b is the block in class define
+		// c is the class object
+		auto block = dynamic_pointer_cast<AST::Block>(b);
+		auto Class = dynamic_pointer_cast<Py::PClass>(c);
+		if (!Class || !block) return;
+		for (auto& s : block->statements) {
+			if (s->getType() == AST::NodeType::FunctionDefine) {
+				auto function = dynamic_pointer_cast<AST::FunctionDefine>(s);
+				auto obj = make_shared<Py::PFunction>(function->parmaNames, function->block);
+				Class->addMember(function->name, obj);
+				// 提升内部的类和函数
 				preScan(function->block);
 			}
 		}
@@ -29,7 +66,7 @@ namespace exe {
 		case AST::NodeType::Block: {
 			// 按顺序执行所有语句
 			auto now = dynamic_pointer_cast<AST::Block>(currentNode);
-			// 先预扫描所有函数
+			// 先预扫描所有函数和类
 			preScan(now);
 			for (auto& statement : now->statements) {
 				auto result = run(now->environment, statement);
@@ -54,6 +91,12 @@ namespace exe {
 				auto target = run(envir, var->obj);
 				auto index = run(envir, var->expression);
 				target->__setitem__(index, obj);
+			}
+			else if (auto var = dynamic_pointer_cast<AST::Attribute>(now->name))
+			{
+				auto obj = run(envir, now->value);
+				auto caller = run(envir, var->caller);
+				caller->__setattribute__(var->attribute, obj);
 			}
 			break;
 		}
@@ -209,8 +252,17 @@ namespace exe {
 			for (auto& p : now->params) {
 				params.push_back(run(envir, p));
 			}
-			return caller->__call__(make_shared<Py::PList>(std::move(params)), envir);
+			if (caller->getType() == Py::Type::FunctionDefine)
+				return caller->__call__(make_shared<Py::PList>(std::move(params)), envir);
+			else if (caller->getType() == Py::Type::Class)
+				return caller->__instance__(make_shared<Py::PList>(std::move(params)), envir);
+			else throwErrorMsg(caller->toString() + "既不是类，也不是函数");
 			break;
+		}
+		case AST::NodeType::Attribute: {
+			auto now = dynamic_pointer_cast<AST::Attribute>(currentNode);
+			auto caller = run(envir, now->caller);
+			return caller->__getattribute__(now->attribute);
 		}
 		case AST::NodeType::Int: {
 			auto now = dynamic_pointer_cast<AST::Int>(currentNode);

@@ -7,7 +7,14 @@ using std::string;
 
 int main() {
     string code1 = R"(
-obj.instances()[0].add()
+class adder:
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+    def get_result(self):
+        return self.a + self.b
+adder(1, 2)
+print(adder.get_result())
 )";
     string code = R"(
 # 修正版：无列表操作的学生成绩管理系统

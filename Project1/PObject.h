@@ -76,8 +76,9 @@ namespace Py {
 		virtual pointer __call__(const pointer& params, shared_ptr<Environment> envir);
 
 		// 对象实例化、属性访问和存储
-		virtual pointer __instance__(const pointer& params);
-
+		virtual pointer __instance__(const pointer& params, shared_ptr<Environment> envir);
+		virtual pointer __getattribute__(const string& attributeName);
+		virtual void __setattribute__(const string& attributeName, const pointer& obj);
 	protected:
 		// 错误处理函数声明
 		pointer defaultOpError(const std::string& op, const pointer& other) const;
