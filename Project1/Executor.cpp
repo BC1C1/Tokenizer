@@ -246,6 +246,8 @@ namespace exe {
 			break;
 		}
 		case AST::NodeType::Call: {
+			// 如果是类的方法， 那么caller是一个attribute，如果attribute的caller是一个instance
+			// 那么就需要加self参数
 			auto now = dynamic_pointer_cast<AST::Call>(currentNode);
 			auto caller = run(envir, now->caller);
 			vector<Py::pointer> params;
@@ -253,7 +255,20 @@ namespace exe {
 				params.push_back(run(envir, p));
 			}
 			if (caller->getType() == Py::Type::FunctionDefine)
+			{
+				// 获取可能的类方法实例
+				auto attriExpr = dynamic_pointer_cast<AST::Attribute>(now->caller);
+				if (attriExpr) {
+					auto instance = dynamic_pointer_cast<Py::PInstance>(run(envir, attriExpr->caller));
+					if (instance) {
+						// 添加参数
+						vector<Py::pointer> nowParams{ instance };
+						nowParams.insert(nowParams.end(), params.begin(), params.end());
+						return caller->__call__(make_shared<Py::PList>(std::move(nowParams)), envir);
+					}
+				}
 				return caller->__call__(make_shared<Py::PList>(std::move(params)), envir);
+			}
 			else if (caller->getType() == Py::Type::Class)
 				return caller->__instance__(make_shared<Py::PList>(std::move(params)), envir);
 			else throwErrorMsg(caller->toString() + "既不是类，也不是函数");
@@ -325,6 +340,9 @@ namespace exe {
 		case AST::NodeType::FunctionDefine: {
 			// 跳过，什么也不做
 			// 主要是预扫描构造的时候对于函数的参数名表是用移动构造
+			break;
+		}
+		case AST::NodeType::Class: {
 			break;
 		}
 		case AST::NodeType::Return: {

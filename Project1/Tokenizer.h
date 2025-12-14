@@ -86,6 +86,7 @@ namespace Lexer
             case TokenType::DEF: os << "DEF"; break;
             case TokenType::RETURN: os << "RETURN"; break;
             case TokenType::CLASS: os << "CLASS"; break;
+            case TokenType::DOT: os << "DOT"; break;
             }
             os << ", '" << token.lexeme << "', line " << token.line << ")";
             return os;

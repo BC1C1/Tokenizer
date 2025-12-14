@@ -1,10 +1,8 @@
 #include "PInstance.h"
 namespace Py {
-	PInstance::PInstance(PClass* parent, const pointer params, shared_ptr<Environment> envir)
+	PInstance::PInstance(PClass* parent, shared_ptr<Environment> envir)
 		: PObject(typeMap.at(Type::Instance)), pclass(parent), currentEnvir(envir)
 	{
-		// params 是初始化参数，在初始化实例的时候调用init以获得正确实例
-		pclass->getMember("__init__")->__call__(params, envir);
 	}
 
 	pointer PInstance::__getattribute__(const string& attributeName)

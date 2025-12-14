@@ -14,7 +14,13 @@ namespace Py {
 	}
 	pointer PClass::__instance__(const pointer& params, shared_ptr<Environment> envir)
 	{
-		return make_shared<PInstance>(this, params, envir);
+		auto obj = make_shared<PInstance>(this, envir);
+		vector<pointer> nowParams{ obj };
+		auto& p = dynamic_pointer_cast<PList>(params)->content();
+		nowParams.insert(nowParams.end(), p.begin(), p.end());
+		auto nowList = make_shared<PList>(std::move(nowParams));
+		this->initFunc->__call__(nowList, envir);
+		return obj;
 	}
 	void PClass::addMember(const string& name, pointer member)
 	{

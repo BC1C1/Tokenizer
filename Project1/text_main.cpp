@@ -13,8 +13,8 @@ class adder:
         self.b = b
     def get_result(self):
         return self.a + self.b
-adder(1, 2)
-print(adder.get_result())
+c = adder(1, 2)
+print(c.get_result())
 )";
     string code = R"(
 # 修正版：无列表操作的学生成绩管理系统
@@ -146,7 +146,7 @@ print("=== 测试完成 ===")
     try {
         // 分词
         Tokenizer tokenizer;
-        auto tokens = tokenizer.scanTokens(code1);
+        auto tokens = tokenizer.scanTokens(code);
         printf("<---------- tokens ---------->\n");
         for (auto token : tokens) {
             std::cout << token << "\n";

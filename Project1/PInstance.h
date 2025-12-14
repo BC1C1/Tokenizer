@@ -5,9 +5,9 @@ namespace Py {
 	class PInstance : public PObject
 	{
 	public:
-		PInstance(PClass* parent, const pointer params, shared_ptr<Environment> envir); 
+		PInstance(PClass* parent, shared_ptr<Environment> envir); 
 
-		// 一些基本getset方法
+		// 基本getset方法
 		virtual pointer __getattribute__(const string& attributeName) override;
 		virtual void __setattribute__(const string& attributeName, const pointer& obj) override;
 

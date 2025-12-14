@@ -400,12 +400,22 @@ namespace AST {
 		pointer varNode = make_shared<Variable>(tokens[current - 1].lexeme);
 
 		// while支持vector[0][0]
-		while (match(TokenType::LBRACKET)) { 
-			auto indexExpr = parseExpression(); 
-			if (!match(TokenType::RBRACKET)) { 
-				throwErrorMsg("缺少右括号 ']'");
+		while (check(TokenType::LBRACKET) || check(TokenType::DOT)) { 
+			auto& type = tokens[current].type;
+			current++;
+			if (type == TokenType::LBRACKET) {
+				auto indexExpr = parseExpression();
+				if (!match(TokenType::RBRACKET)) {
+					throwErrorMsg("缺少右括号 ']'");
+				}
+				varNode = make_shared<Index>(varNode, indexExpr);
 			}
-			varNode = make_shared<Index>(varNode, indexExpr);
+			else if (type == TokenType::DOT) {
+				auto attribute = consume(TokenType::IDENTIFIER, "无效的属性");
+				varNode = make_shared<Attribute>(varNode, attribute.lexeme);
+			}
+			else
+				throwErrorMsg("左值不支持的运算符类型: " + tokens[current - 1].lexeme);
 		}
 
 		return varNode;
