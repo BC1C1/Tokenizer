@@ -15,7 +15,7 @@ namespace Py {
 	using std::runtime_error;
 	enum class Type {
 		Int, Float, Str, Bool, None, Undefined, Iterator, List, FunctionDefine,
-		ReturnValue, Class, Instance
+		ReturnValue, Class, Instance, File
 	};
 	std::string TypeToString(Type type);
 	struct PyType {
@@ -106,7 +106,8 @@ namespace Py {
 		{Type::FunctionDefine, PyType{Type::FunctionDefine}},
 		{Type::ReturnValue, PyType{Type::ReturnValue}},
 		{Type::Class, PyType{Type::Class}},
-		{Type::Instance, PyType{Type::Instance}}
+		{Type::Instance, PyType{Type::Instance}},
+		{Type::File, PyType{Type::File}}
 	};
 	class PInt;
 	class PFloat;
@@ -119,6 +120,7 @@ namespace Py {
 	class PReturnValue;
 	class PClass;
 	class PInstance;
+	class PFile;
 
 	class Environment {
 		using EPointer = std::shared_ptr<Environment>;

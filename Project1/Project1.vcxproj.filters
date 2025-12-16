@@ -129,6 +129,12 @@
     <ClInclude Include="Class.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Bulidins.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PFile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
@@ -243,6 +249,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Class.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Bulidins.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PFile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

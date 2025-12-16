@@ -132,6 +132,7 @@
     <ClInclude Include="Binary.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Bool.h" />
+    <ClInclude Include="Bulidins.h" />
     <ClInclude Include="Call.h" />
     <ClInclude Include="Class.h" />
     <ClInclude Include="Executor.h" />
@@ -148,6 +149,7 @@
     <ClInclude Include="Parser.h" />
     <ClInclude Include="PBool.h" />
     <ClInclude Include="PClass.h" />
+    <ClInclude Include="PFile.h" />
     <ClInclude Include="PFloat.h" />
     <ClInclude Include="PFunction.h" />
     <ClInclude Include="PInstance.h" />
@@ -172,6 +174,7 @@
     <ClCompile Include="Binary.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Bool.cpp" />
+    <ClCompile Include="Bulidins.cpp" />
     <ClCompile Include="Call.cpp" />
     <ClCompile Include="Class.cpp" />
     <ClCompile Include="Executor.cpp" />
@@ -188,6 +191,7 @@
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="PBool.cpp" />
     <ClCompile Include="PClass.cpp" />
+    <ClCompile Include="PFile.cpp" />
     <ClCompile Include="PFloat.cpp" />
     <ClCompile Include="PFunction.cpp" />
     <ClCompile Include="PInstance.cpp" />

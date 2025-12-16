@@ -46,3 +46,7 @@
 #include "PInstance.h"
 
 #include "Class.h"
+
+#include "Bulidins.h"
+
+#include "PFile.h"

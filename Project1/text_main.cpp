@@ -146,7 +146,7 @@ print("=== 测试完成 ===")
     try {
         // 分词
         Tokenizer tokenizer;
-        auto tokens = tokenizer.scanTokens(code);
+        auto tokens = tokenizer.scanTokens(code1);
         printf("<---------- tokens ---------->\n");
         for (auto token : tokens) {
             std::cout << token << "\n";
