@@ -11,13 +11,15 @@ namespace Py {
 	class PFunction : public PObject
 	{
 	public:
-		// define构造的时候需要参数表和执行方法
-		// 若想要使用内置, 传入的参数block为nullptr,
-		// isUseBlock为false, 最后传入函数指针
-		PFunction(vector<string>& params, 
+		PFunction(vector<string> params, 
 			      AST::pointer block, 
 			      bool isUseBlock = true,
 				  FuncPointer func = nullptr);
+		PFunction(vector<string> params,
+				  AST::pointer block,
+				  bool isUseBlock = true,
+				  FuncPointer func = nullptr,
+				  std::unordered_map<string, AST::pointer>&& defaultValue);
 
 		virtual string toString() const override;
 
@@ -28,6 +30,7 @@ namespace Py {
 		AST::pointer block;
 		bool isUseBlock;
 		FuncPointer c_function;
+		std::unordered_map<string, AST::pointer> defaultValueMap;
 	};
 }
 

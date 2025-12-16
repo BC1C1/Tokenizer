@@ -7,7 +7,7 @@ namespace Lexer
 {
     enum class TokenType {
         // 关键字 
-        IF, ELSE, ELIF, WHILE, PRINT, INPUT, TRUE, FALSE, IN, For,
+        IF, ELSE, ELIF, WHILE, INPUT, TRUE, FALSE, IN, For,
         DEF, RETURN, CLASS,
         // 标识符 (变量名,函数名)
         IDENTIFIER,
@@ -54,7 +54,6 @@ namespace Lexer
             case TokenType::ELSE: os << "ELSE"; break;
             case TokenType::ELIF: os << "ELIF"; break;
             case TokenType::WHILE: os << "WHILE"; break;
-            case TokenType::PRINT: os << "PRINT"; break;
             case TokenType::INPUT: os << "INPUT"; break;
             case TokenType::TRUE: os << "TRUE"; break;
             case TokenType::FALSE: os << "FALSE"; break;
@@ -97,7 +96,6 @@ namespace Lexer
         {"else", TokenType::ELSE},
         {"elif", TokenType::ELIF},
         {"while", TokenType::WHILE},
-        {"print", TokenType::PRINT},
         {"input", TokenType::INPUT},
         {"True", TokenType::TRUE},
         {"False", TokenType::FALSE},

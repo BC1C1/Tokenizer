@@ -60,9 +60,6 @@
     <ClInclude Include="Bool.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Print.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Parser.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -132,7 +129,7 @@
     <ClInclude Include="Bulidins.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PFile.h">
+    <ClInclude Include="BulidinClasses.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -180,9 +177,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Bool.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Print.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Parser.cpp">
@@ -254,7 +248,7 @@
     <ClCompile Include="Bulidins.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="PFile.cpp">
+    <ClCompile Include="BulidinClasses.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

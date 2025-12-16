@@ -3,6 +3,9 @@ namespace exe {
 	using std::vector;
 	exe::Executor::Executor(NPointer& ast) : ast(ast)
 	{
+		// 向环境中注册全局函数
+		auto globalEnvir = dynamic_pointer_cast<AST::Block>(ast)->environment;
+		Py::Bulidins::register_all_function(globalEnvir);
 	}
 	void Executor::preScan(NPointer b)
 	{
@@ -13,7 +16,13 @@ namespace exe {
 			if (s->getType() == AST::NodeType::FunctionDefine) {
 				auto function = dynamic_pointer_cast<AST::FunctionDefine>(s);
 				// 构造函数对象
-				auto obj = make_shared<Py::PFunction>(function->parmaNames, function->block);
+				auto obj = make_shared<Py::PFunction>(
+					function->paramNames, 
+					function->block, 
+					true,
+					nullptr,
+					std::move(function->defaultValue)
+				);
 				OutEnvir->assign(function->name, obj);
 				// 对于def中嵌套的def也要处理
 				preScan(function->block);
@@ -49,7 +58,13 @@ namespace exe {
 		for (auto& s : block->statements) {
 			if (s->getType() == AST::NodeType::FunctionDefine) {
 				auto function = dynamic_pointer_cast<AST::FunctionDefine>(s);
-				auto obj = make_shared<Py::PFunction>(function->parmaNames, function->block);
+				auto obj = make_shared<Py::PFunction>(
+					function->paramNames, 
+					function->block,
+					true,
+					nullptr,
+					std::move(function->defaultValue)
+				);
 				Class->addMember(function->name, obj);
 				// 提升内部的类和函数
 				preScan(function->block);
@@ -299,18 +314,18 @@ namespace exe {
 			return make_shared<Py::PBool>(now->value);
 			break;
 		}
-		case AST::NodeType::Print: {
-			auto now = dynamic_pointer_cast<AST::Print>(currentNode);
-			string text = "";
-			for (size_t i = 0; i < now->text.size(); ++i) {
-				text += run(envir, now->text[i])->toString();
-				if (i != now->text.size() - 1) {
-					text += " ";
-				}
-			}
-			puts(text.c_str());
-			break;
-		}
+		//case AST::NodeType::Print: {
+		//	auto now = dynamic_pointer_cast<AST::Print>(currentNode);
+		//	string text = "";
+		//	for (size_t i = 0; i < now->text.size(); ++i) {
+		//		text += run(envir, now->text[i])->toString();
+		//		if (i != now->text.size() - 1) {
+		//			text += " ";
+		//		}
+		//	}
+		//	puts(text.c_str());
+		//	break;
+		//}
 		case AST::NodeType::Index: {
 			auto now = dynamic_pointer_cast<AST::Index>(currentNode);
 			auto obj = run(envir, now->obj);

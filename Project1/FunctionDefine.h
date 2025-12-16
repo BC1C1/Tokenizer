@@ -5,10 +5,18 @@ namespace AST {
 	class FunctionDefine : public ANode
 	{
 	public:
-		FunctionDefine(const string& name, vector<string>&& parmaNames, pointer block);
+		FunctionDefine(const string& name, 
+					   vector<string>&& paramNames,
+					   pointer block);
+		FunctionDefine(const string& name,
+			vector<string>&& paramNames,
+			pointer block,
+			std::unordered_map<string, pointer>&& defaultValue);
+
 		string name;
-		vector<string> parmaNames;
+		vector<string> paramNames;
 		pointer block;
+		std::unordered_map<string, pointer> defaultValue;
 	};
 }
 

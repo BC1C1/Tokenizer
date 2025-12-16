@@ -50,8 +50,8 @@ namespace AST {
 	{
 		auto assigment = parseAssignment();
 		if (assigment) return assigment;
-		auto printStmt = parsePrintStmt();
-		if (printStmt) return printStmt;
+		//auto printStmt = parsePrintStmt();
+		//if (printStmt) return printStmt;
 		auto ifStmt = parseIfStmt();
 		if (ifStmt) return ifStmt;
 		auto whileStmt = parseWhileStmt();
@@ -338,7 +338,7 @@ namespace AST {
 		consume(TokenType::LPAREN, "函数列表缺少左括号");
 		vector<pointer> vars;
 		while (!check(TokenType::RPAREN)) {
-			auto ele = parsePrimary();
+			auto ele = parseExpression(); // 支持默认参数，默认参数会被识别为赋值语句
 			if (ele && ele->getType() == NodeType::Variable)
 				vars.push_back(ele);
 			else
@@ -351,16 +351,26 @@ namespace AST {
 			}
 		}
 		vector<string> params;
+		std::unordered_map<string, pointer> defaultValue;
 		for (auto& v : vars) {
-			params.push_back(dynamic_pointer_cast<Variable>(v)->name);
+			if (auto var = dynamic_pointer_cast<Assignment>(v)) {
+				auto paramNameNode = var->name;
+				auto paramName = dynamic_pointer_cast<Variable>(paramNameNode);
+				// 不可以是左值，只能是变量名
+				if (!paramName) throwErrorMsg("无效的默认参数");
+				params.push_back(paramName->name);
+				defaultValue[paramName->name] = var->value;
+			}
+			else
+				params.push_back(dynamic_pointer_cast<Variable>(v)->name);
 		}
 		consume(TokenType::RPAREN, "函数列表缺少右括号");
 		consume(TokenType::COLON, "函数定义缺少冒号");
 		auto block = parseBlock(true);
-		return make_shared<FunctionDefine>(name, std::move(params), block);
+		return make_shared<FunctionDefine>(name, std::move(params), block, std::move(defaultValue));
 	}
 
-	pointer Parser::parsePrintStmt()
+	/*pointer Parser::parsePrintStmt()
 	{
 		// 确认是不是print语句
 		if (!match(TokenType::PRINT)) return nullptr;
@@ -373,7 +383,7 @@ namespace AST {
 		} while (match(TokenType::COMMA));
 		consume(TokenType::RPAREN, "缺失的右括号");
 		return make_shared<Print>(text);
-	}
+	}*/
 
 	pointer Parser::parseAssignment()
 	{

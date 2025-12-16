@@ -16,7 +16,6 @@
 #include "String.h"
 #include "Variable.h"
 #include "Bool.h"
-#include "Print.h"
 
 #include "NodeDefine.h"
 #include "Tokenizer.h"
@@ -48,5 +47,3 @@
 #include "Class.h"
 
 #include "Bulidins.h"
-
-#include "PFile.h"

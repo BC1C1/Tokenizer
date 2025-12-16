@@ -28,7 +28,7 @@ namespace AST {
 
 		pointer parseFunction();
 
-		pointer parsePrintStmt();
+		//pointer parsePrintStmt();
 
 		pointer parseAssignment();
 		pointer parseLValue();
