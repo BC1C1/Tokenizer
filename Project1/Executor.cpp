@@ -1,11 +1,16 @@
 #include "Executor.h"
 namespace exe {
 	using std::vector;
-	exe::Executor::Executor(NPointer& ast) : ast(ast)
+	exe::Executor::Executor(NPointer ast) : ast(ast)
 	{
-		// 向环境中注册全局函数
-		auto globalEnvir = dynamic_pointer_cast<AST::Block>(ast)->environment;
-		Py::Bulidins::register_all_function(globalEnvir);
+	}
+	void Executor::registerGlobalFunction()
+	{
+		auto astNode = dynamic_pointer_cast<AST::Block>(ast);
+		if (astNode) {
+			auto globalEnvir = astNode->environment;
+			Py::Bulidins::register_all_function(globalEnvir);
+		}
 	}
 	void Executor::preScan(NPointer b)
 	{

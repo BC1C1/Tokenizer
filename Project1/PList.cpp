@@ -25,6 +25,22 @@ namespace Py {
 	{
 		return iterable.size();
 	}
+	pointer PList::__getattribute__(const string& attrName)
+	{
+		// 在PList对象后使用.来执行这个，比如l = []\n l.append(2)
+		// 这里返回一个函数对象，执行是()的事情
+		if (attrName == "append") {
+			vector<string> param{ "any" };
+			auto self = dynamic_pointer_cast<PList>(shared_from_this());
+			InnerFunc c_func = [self](pointer params, EPointer envir)->pointer
+				{
+					return self->append(params, envir);
+				};
+			auto funcObj = make_shared<InnerFunc>(c_func);		
+			return make_shared<PFunction>(param, nullptr, false, funcObj);
+		}
+		throw std::runtime_error("PList没有属性" + attrName);
+	}
 	string PList::toString() const
 	{
 		string result = "[ ";
@@ -62,6 +78,33 @@ namespace Py {
 	pointer PList::__getitem__(const pointer& index)
 	{
 		return this->iterable[findIndex(index)];
+	}
+	pointer PList::append(pointer params, shared_ptr<Py::Environment> envir)
+	{
+		try {
+			auto paramList = dynamic_pointer_cast<PList>(params);
+			if (!paramList) {
+				throw std::runtime_error("append参数必须是列表类型");
+			}
+			if (paramList->content().size() != 1) {
+				throw std::runtime_error("append() takes exactly one argument ("
+					+ std::to_string(paramList->content().size()) + " given)");
+			}
+
+			pointer item = paramList->content()[0];
+			if (!item) {
+				throw std::runtime_error("append参数不能为空");
+			}
+			iterable.push_back(item); 
+		}
+		catch (const std::runtime_error& e) {
+			throw std::runtime_error("append调用失败：" + std::string(e.what()));
+		}
+		catch (...) {
+			throw std::runtime_error("append参数错误（非预期异常）");
+		}
+
+		return make_shared<PNone>();
 	}
 	int PList::findIndex(const pointer& index)
 	{

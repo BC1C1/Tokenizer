@@ -338,9 +338,13 @@ namespace AST {
 		consume(TokenType::LPAREN, "函数列表缺少左括号");
 		vector<pointer> vars;
 		while (!check(TokenType::RPAREN)) {
-			auto ele = parseExpression(); // 支持默认参数，默认参数会被识别为赋值语句
-			if (ele && ele->getType() == NodeType::Variable)
-				vars.push_back(ele);
+			pointer ele = nullptr;
+			auto assign = parseAssignment();
+			if (assign) ele = assign;
+			else ele = parsePrimary(); 
+			if (ele && (ele->getType() == NodeType::Variable ||
+				ele->getType() == NodeType::Assignment))// there
+				vars.push_back(ele); 
 			else
 				throwErrorMsg("无效的参数");
 			if (match(TokenType::COMMA)) {

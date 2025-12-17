@@ -7,7 +7,21 @@ using std::string;
 
 int main() {
     string code1 = R"(
-print(1)
+class Counter:
+    def __init__(self, start):
+        self.count = start
+    def add(self, step):
+        self.count = step + self.count
+
+c = Counter(0)
+for i in range(0, 10, 2):
+    if i % 4 == 0:
+        c.add(i)
+    else:
+        c.add(1)
+while c.count < 20:
+    c.add(2)
+print(c.count)
 )";
     string code = R"(
 # 修正版：无列表操作的学生成绩管理系统
@@ -156,6 +170,7 @@ print("=== 测试完成 ===")
 
         // 执行
         Executor executor(ast);
+        executor.registerGlobalFunction();
         executor.run();
 
         std::cout << "\n=== 测试跑通！===" << std::endl;

@@ -10,7 +10,8 @@ namespace exe {
 	class Executor
 	{
 	public:
-		Executor(NPointer& ast);
+		Executor(NPointer ast);
+		void registerGlobalFunction();
 		void preScan(NPointer block);
 		void preScanClass(NPointer block);
 		void preScanFunctionInClass(PPointer c, NPointer b);

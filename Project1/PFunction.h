@@ -11,15 +11,12 @@ namespace Py {
 	class PFunction : public PObject
 	{
 	public:
-		PFunction(vector<string> params, 
-			      AST::pointer block, 
-			      bool isUseBlock = true,
-				  FuncPointer func = nullptr);
 		PFunction(vector<string> params,
 				  AST::pointer block,
 				  bool isUseBlock = true,
 				  FuncPointer func = nullptr,
-				  std::unordered_map<string, AST::pointer>&& defaultValue);
+				  std::unordered_map<string, AST::pointer>&& defaultValue = 
+				  std::unordered_map<string, AST::pointer>());
 
 		virtual string toString() const override;
 

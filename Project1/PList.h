@@ -16,6 +16,8 @@ namespace Py {
 
 		int size() const;
 
+		virtual pointer __getattribute__(const string& attrName) override;
+
 		virtual string toString() const override;
 
 		vector<pointer>& content();
@@ -30,6 +32,7 @@ namespace Py {
 	private:
 		vector<pointer> iterable;
 
+		pointer append(pointer params, shared_ptr<Py::Environment> envir);
 	private:
 		int findIndex(const pointer& index);
 	};

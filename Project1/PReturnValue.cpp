@@ -7,7 +7,7 @@ namespace Py {
 
 	string PReturnValue::toString() const
 	{
-		return "ReturnValue: " + value->toString();
+		return value->toString();
 	}
 }
 
