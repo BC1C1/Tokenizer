@@ -1,7 +1,12 @@
-# Tokenizer — 从零实现的 Python 子集解释器（C++）
+# Tokenizer — Python 子集解释器（最早的原型版）
 
-一个自己写的解释器：把一段 Python 风格的代码**扫描成 token → 解析成 AST → 求值执行**。
-没有用任何现成的解析器生成器，词法、语法、AST、运行时对象系统全部手写。
+> **这是最初的原型**：写它的时候还没搞懂编译原理，所以没有编译成中间码这一步 —— `Parser` 产出 AST 之后，由 `Executor` **直接遍历 AST 求值**（tree-walking interpreter）。
+>
+> 它后来演化成了两个后续版本（都在同一个"从零写 Python 解释器"的路线下）：
+> - `qt\python` —— 搬到 Qt Creator，加界面，仍是 tree-walking；
+> - `c\python` —— 因为调试太痛苦搬到 Visual Studio，改成 **compiler → Instruction → PVM** 的字节码虚拟机路线（那个版本的 UI 文件是在 Qt Creator 里设计好再搬过去的）。
+>
+> 所以这个仓库既是能跑的解释器，也是一条学习路线的**起点记录**。
 
 ## 管道
 
@@ -69,9 +74,9 @@ executor.run();
 ## 参考与说明
 
 - 整体管道（tokenizer → parser → AST → executor）的**架构思路**参考了 *Crafting Interpreters*（Robert Nystrom）的 Lox 实现路线；**代码与对象系统是本仓库自己写的**，并在此基础上自行扩展了默认参数、嵌套类/函数定义、列表迭代器等 Lox 没有的东西。
-- 尚待完善：闭包、栈溢出防护（部分提交信息里留了记号）。
+- 写这个版本时对编译原理还不熟，所以它是**最直接的 tree-walking 形态**；后续版本（`qt\python`、`c\python`）才逐步引入界面与字节码虚拟机。
 
 ## 已知取舍
 
 - 语言是 Python 的**子集**，不是完整实现；内置函数目前只有 `print` / `range`。
-- 待执行代码在入口文件里硬编码，还没有做成"读文件/REPL"的用法。
+- 入口在 `text_main.cpp`，待执行代码写在里面。
